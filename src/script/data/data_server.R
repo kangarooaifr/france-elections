@@ -117,7 +117,7 @@ data_Server <- function(id, r, path) {
       cat("input$select_dataset =", input$select_dataset, "\n")
       
       # -- Check: 2022 file format...
-      if(input$select_dataset == "resultats-par-niveau-subcom-t1-france-entiere.txt"){
+      if(input$select_dataset == "Presidentielle_2022_1er_Tour.txt"){
         
         COL_CLASSES_BEFORE_CANDIDATES <- COL_CLASSES_BEFORE_CANDIDATES_2022
         
@@ -158,7 +158,7 @@ data_Server <- function(id, r, path) {
       # ***************************************************************************************
       # -- !!!DATA!!! FORMAT 2022 STUFF .............
       
-      if(input$select_dataset == "resultats-par-niveau-subcom-t1-france-entiere.txt"){
+      if(input$select_dataset == "Presidentielle_2022_1er_Tour.txt"){
         
         dataset <- fit_format(dataset, COLS_TO_ADD, COLS_TO_DELETE)
         nb_col_before_candidate <- 21
