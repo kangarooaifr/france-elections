@@ -30,7 +30,7 @@ rm(nm)
 
 sidebar <- dashboardSidebar(
     sidebarMenu(
-        menuItem("Map", tabName = "map", icon = icon("map"), selected = TRUE)
+        menuItem("Carte", tabName = "map", icon = icon("map"), selected = TRUE)
     )
 )
 
@@ -42,7 +42,7 @@ body <- dashboardBody(
     tabItems(
     
         tabItem(tabName = "map",
-                h2("Map"),
+                h2("Résultats par Commune"),
                 
                 fluidRow(
                     column(width = 2,
@@ -52,7 +52,8 @@ body <- dashboardBody(
                            map_search_Input("map")
                            ),
                     column(width = 10,
-                           map_UI("map")
+                           map_UI("map"),br(),
+                           p("© Philippe PERET - KANGAROO.AI | Version 1.1 | Source : https://www.data.gouv.fr/fr/pages/donnees-des-elections/")
                            )
                 )
                 
@@ -65,7 +66,7 @@ body <- dashboardBody(
 
 dashboardPage(
     
-    dashboardHeader(title = "Election Map"),
+    dashboardHeader(title = "Elections France"),
     sidebar,
     body
     
