@@ -13,8 +13,5 @@ makePalette <- function(min = 0, max = 1){
 }
 
 
-#binpal <- colorBin("BrBG", c(0, 1), 5, pretty = FALSE)
-
-
 #BrBG
 #PuBuGn
