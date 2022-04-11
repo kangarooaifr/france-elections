@@ -141,8 +141,13 @@ data_Server <- function(id, r, path) {
       
       # load dataset
       cat("Loading dataset :", target_file, "\n")
+      progressSweetAlert(id = "progress", session = session, value = 10, total = 100, display_pct = TRUE, striped = TRUE, 
+                         title = "Chargement des résultats...")
       #dataset <- read.csv(target_file, header = TRUE, sep = ";", dec = ",", colClasses = colClasses)
       dataset <- read.csv(target_file, header = TRUE, sep = ";", dec = ",", colClasses = colClasses, fileEncoding = "latin1")
+      
+      updateProgressBar(session, "progress", value = 100, total = 100, title = "Chargement terminé")
+      closeSweetAlert(session)
       cat("Loading dataset done! \n")
 
       # -- DEBUG

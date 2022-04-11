@@ -21,8 +21,8 @@ select_dataset_UI <- function(id){
   wellPanel(
     
     # init input (empty choices)
-    selectizeInput(ns("select_dataset"), label = "Dataset", choices = NULL),
-    actionButton(ns("load_dataset"), label = "Load")
+    selectizeInput(ns("select_dataset"), label = "Résultats", choices = NULL),
+    actionButton(ns("load_dataset"), label = "Charger")
     
   )
   

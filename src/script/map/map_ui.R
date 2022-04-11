@@ -37,7 +37,7 @@ map_search_Input <- function(id) {
   wellPanel(
     
     # search input
-    searchInput(ns("map_search"), label = "Search", value = ""),
+    searchInput(ns("map_search"), label = "Recherche", value = ""),
     p("Entrez le nom d'une ville, un département, une région, une adresse.")
     
   )

@@ -56,7 +56,15 @@ cities_Server <- function(id, r, path) {
       if(!exists("raw_data_map")){
         
         cat("Loading geojson file... \n")
+        
+        progressSweetAlert(id = "progress", session = session, value = 10, total = 100, display_pct = TRUE, striped = TRUE, 
+                           title = "Chargement du contour des communes...")
+        
         geojson <- geojson_read(file.path(path$resource, "a-com2022.json"), what = "sp")
+        
+        updateProgressBar(session, "progress", value = 100, total = 100, title = "Chargement terminé")
+        closeSweetAlert(session)
+        
         cat("Loading geojson file done! \n")
         
         if(DEBUG){
@@ -135,20 +143,26 @@ cities_Server <- function(id, r, path) {
                     
       cat("New filtered map is available \n")
       
+      progressSweetAlert(id = "progress", session = session, value = 10, total = 100, display_pct = TRUE, striped = TRUE, 
+                         title = "Mise à jour de la carte...")
+      
       filtered_map <- filtered_map()
       col_name <- filter_by_name()
       
       cat("Update map Polygons... \n ")
       cat("- col_name = ", col_name, "\n")
       
-      
+
       cat("Building labels \n")
+      updateProgressBar(session, "progress", value = 20, total = 100, title = "Création des étiquettes...")
+
       labels <- sprintf(
         "<strong>%s</strong><br/>%s",
         filtered_map@data$libgeo, paste("Résultat = ", round(filtered_map@data[, (colnames(filtered_map@data) %in% col_name)], digits = 2), "%")
       ) %>% lapply(htmltools::HTML)
       
       cat("Building color palette \n")
+      updateProgressBar(session, "progress", value = 40, total = 100, title = "Création de la palette couleur...")
       max <- 100
       if(color_mode()){
         cat("Compute % max \n")
@@ -157,13 +171,16 @@ cities_Server <- function(id, r, path) {
       pal <- makePalette(min = 0, max = max)
       
       cat("Add / Update polygons \n")
-      
+      updateProgressBar(session, "progress", value = 50, total = 100, title = "Affichage des communes...")
       r$proxymap %>%
         clearGroup("cities") %>%
         addPolygons(data = filtered_map, 
                     weight = 1, color = ~pal(filtered_map[[col_name]]),
                     fillColor = ~pal(filtered_map[[col_name]]), fillOpacity = 0.8,
                     group = "cities", label = labels)
+      
+      updateProgressBar(session, "progress", value = 100, total = 100, title = "Terminé")
+      closeSweetAlert(session)
       
     })
 
