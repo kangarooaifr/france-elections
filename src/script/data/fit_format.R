@@ -1,0 +1,128 @@
+
+
+fit_format <- function(data, cols_to_add, cols_to_delete){
+  
+  cat("*** Fitting data format *** \n")
+  
+  # delete
+  cat("- Drop cols :", cols_to_delete, "\n")
+  data[cols_to_delete] <- NULL
+  
+  # add
+  cat("- Adding cols :", cols_to_add, "\n")
+  data[cols_to_add] <- 0
+  
+  # reorder......
+  cols_order <- c("Code.du.département",
+                  "Libellé.du.département",
+                  "Code.de.la.circonscription",
+                  "Libellé.de.la.circonscription",
+                  "Code.de.la.commune",
+                  "Libellé.de.la.commune",
+                  "Code.du.b.vote",
+                  "Inscrits",
+                  "Abstentions",
+                  "X..Abs.Ins",
+                  "Votants",
+                  "X..Vot.Ins",
+                  "Blancs",
+                  "X..Blancs.Ins",
+                  "X..Blancs.Vot",
+                  "Nuls",
+                  "X..Nuls.Ins",
+                  "X..Nuls.Vot",
+                  "Exprimés",
+                  "X..Exp.Ins",      
+                  "X..Exp.Vot",
+                  "N.Panneau",
+                  "Sexe",
+                  "Nom",
+                  "Prénom",
+                  "Voix",
+                  "X..Voix.Ins",
+                  "X..Voix.Exp",
+                  "N.Panneau.1",
+                  "Sexe.1",
+                  "Nom.1",
+                  "Prénom.1",
+                  "Voix.1",
+                  "X..Voix.Ins.1",
+                  "X..Voix.Exp.1",
+                  "N.Panneau.2",
+                  "Sexe.2",
+                  "Nom.2",
+                  "Prénom.2",
+                  "Voix.2",
+                  "X..Voix.Ins.2",
+                  "X..Voix.Exp.2",
+                  "N.Panneau.3",
+                  "Sexe.3",
+                  "Nom.3",
+                  "Prénom.3",
+                  "Voix.3",
+                  "X..Voix.Ins.3",
+                  "X..Voix.Exp.3",
+                  "N.Panneau.4",
+                  "Sexe.4",
+                  "Nom.4",
+                  "Prénom.4",
+                  "Voix.4",
+                  "X..Voix.Ins.4",
+                  "X..Voix.Exp.4",
+                  "N.Panneau.5",
+                  "Sexe.5",
+                  "Nom.5",
+                  "Prénom.5",
+                  "Voix.5",
+                  "X..Voix.Ins.5",
+                  "X..Voix.Exp.5",
+                  "N.Panneau.6",
+                  "Sexe.6",
+                  "Nom.6",
+                  "Prénom.6",
+                  "Voix.6",
+                  "X..Voix.Ins.6",
+                  "X..Voix.Exp.6",
+                  "N.Panneau.7",
+                  "Sexe.7",
+                  "Nom.7",
+                  "Prénom.7",
+                  "Voix.7",
+                  "X..Voix.Ins.7",
+                  "X..Voix.Exp.7",
+                  "N.Panneau.8",
+                  "Sexe.8",
+                  "Nom.8",
+                  "Prénom.8",
+                  "Voix.8",
+                  "X..Voix.Ins.8",
+                  "X..Voix.Exp.8",
+                  "N.Panneau.9",
+                  "Sexe.9",
+                  "Nom.9",
+                  "Prénom.9",
+                  "Voix.9",
+                  "X..Voix.Ins.9",
+                  "X..Voix.Exp.9",
+                  "N.Panneau.10",
+                  "Sexe.10",
+                  "Nom.10",
+                  "Prénom.10",
+                  "Voix.10",
+                  "X..Voix.Ins.10",
+                  "X..Voix.Exp.10",
+                  "N.Panneau.11",
+                  "Sexe.11",
+                  "Nom.11",
+                  "Prénom.11",
+                  "Voix.11",
+                  "X..Voix.Ins.11",
+                  "X..Voix.Exp.11")
+  
+  # order
+  data <- data[, cols_order]
+  
+  # return
+  data
+  
+}

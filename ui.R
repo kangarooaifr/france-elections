@@ -46,10 +46,10 @@ body <- dashboardBody(
                 
                 fluidRow(
                     column(width = 2,
-                           search_Input("map"),
-                           cities_UI("cities"),
-                           data_UI("data"),
-                           dep_UI("cities")
+                           select_dataset_UI("data"),
+                           filters_UI("cities"),
+                           hide_show_UI("cities"),
+                           map_search_Input("map")
                            ),
                     column(width = 10,
                            map_UI("map")
