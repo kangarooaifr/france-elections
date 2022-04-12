@@ -172,6 +172,10 @@ data_Server <- function(id, r, path) {
 
       # ***************************************************************************************
       
+      # check DROM dept code (outre mer, they sometimes put ZA... instead of 97x)
+      dataset <- check_drom_code(dataset)
+      
+      
       # pre processing (one col per candidate)
       dataset <- pre_processing(dataset, nb_cand = nb_cand, nb_col_before_candidate, nb_col_candidate)
      
