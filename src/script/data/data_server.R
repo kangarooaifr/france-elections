@@ -158,10 +158,12 @@ data_Server <- function(id, r, path) {
       # ***************************************************************************************
       # -- !!!DATA!!! FORMAT 2022 STUFF .............
       
-      if(input$select_dataset == "Presidentielle_2022_1er_Tour.txt"){
+      if(input$select_dataset == "Presidentielle_2022_2eme_Tour.txt"){
         
         dataset <- fit_format(dataset, COLS_TO_ADD, COLS_TO_DELETE)
         nb_col_before_candidate <- 21
+        
+        nb_cand <- 2
         
         # -- DEBUG
         if(DEBUG){
