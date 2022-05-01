@@ -58,8 +58,9 @@ filters_UI <- function(id){
     selectizeInput(ns("filter_by_dep"), label = "Département", choices = NULL, multiple = TRUE),
     
     # color palette
-    checkboxInput(ns("color_mode"), label = "Couleurs : activer % max", value = TRUE, width = NULL),
-    p("Calcul des couleurs en fonction du % max du candidat dans la zone sélectionnée (sinon de 0 à 100%)"),
+    checkboxInput(ns("color_mode_min"), label = "Couleurs : activer % min", value = TRUE, width = NULL),
+    checkboxInput(ns("color_mode_max"), label = "Couleurs : activer % max", value = TRUE, width = NULL),
+    p("Calcul des couleurs en fonction des % du candidat dans la zone sélectionnée (sinon de 0 à 100%)"),
     
     # opacity
     sliderInput(

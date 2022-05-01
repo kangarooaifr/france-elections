@@ -36,7 +36,8 @@ cities_Server <- function(id, r, path) {
     r$filter_by_name <- reactiveVal(NULL)
     filter_by_dep <- reactiveVal(NULL)
     filter_by_name <- reactiveVal(NULL)
-    color_mode <- reactiveVal(NULL)
+    color_mode_max <- reactiveVal(NULL)
+    color_mode_min <- reactiveVal(NULL)
     color_opacity <- reactiveVal(NULL)
     
     filtered_map <- reactiveVal(NULL)
@@ -187,7 +188,8 @@ cities_Server <- function(id, r, path) {
       
       
       filter_by_name(input$filter_by_name)
-      color_mode(input$color_mode)
+      color_mode_max(input$color_mode_max)
+      color_mode_min(input$color_mode_min)
       color_opacity(input$select_opacity)
       
     })
@@ -199,7 +201,8 @@ cities_Server <- function(id, r, path) {
     
     observeEvent({filtered_map()
       filter_by_name()
-      color_mode()
+      color_mode_max()
+      color_mode_min()
       color_opacity()}, {
                     
       cat("New filtered map is available \n")
@@ -236,18 +239,27 @@ cities_Server <- function(id, r, path) {
       
       cat("Building color palette \n")
       updateProgressBar(session, "progress", value = 40, total = 100, title = "Création de la palette couleur...")
+      
+      # set max value to compute color palette
       max <- 100
-      if(color_mode()){
+      if(color_mode_max()){
         cat("Compute % max \n")
         #max <- max(filtered_map@data[col_name], na.rm = TRUE)
         max <- max(filtered_map@data[col_name] / filtered_map@data$Exprimés * 100, na.rm = TRUE)
-        }
+      }
       
-      pal <- makePalette(min = 0, max = max)
-      
-      if(DEBUG)
-        debug_pal <<- pal
-      
+      # set min value to compute color palette
+      min <- 0
+      if(color_mode_min()){
+        cat("Compute % min \n")
+        #max <- max(filtered_map@data[col_name], na.rm = TRUE)
+        min <- min(filtered_map@data[col_name] / filtered_map@data$Exprimés * 100, na.rm = TRUE)
+      }
+    
+      # build color palette  
+      pal <- makePalette(min = min, max = max)
+
+      # update map
       cat("Add / Update polygons \n")
       updateProgressBar(session, "progress", value = 50, total = 100, title = "Affichage des contours...")
       r$proxymap %>%

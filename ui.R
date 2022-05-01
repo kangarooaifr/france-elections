@@ -47,15 +47,21 @@ body <- dashboardBody(
                     column(width = 2,
                            select_dataset_UI("data"),
                            geojson_UI("cities"),
-                           filters_UI("cities"),
-                           hide_show_UI("cities"),
+                           #filters_UI("cities"),
+                           #hide_show_UI("cities"),
                            map_search_Input("map")),
                     
-                    column(width = 10,
+                    column(width = 8,
                            map_UI("map"),br(),
                            p("© Philippe PERET - KANGAROO.AI | Version 1.2 | ",
                            a("LinkedIn", href="https://www.linkedin.com/in/philippeperet/"), "|",
-                           a("Source", href="https://www.data.gouv.fr/fr/pages/donnees-des-elections/"))))
+                           a("Source", href="https://www.data.gouv.fr/fr/pages/donnees-des-elections/"))),
+                    
+                    column(width = 2,
+                           filters_UI("cities"),
+                           hide_show_UI("cities"))
+                    
+                    )
     ))
 )
 
