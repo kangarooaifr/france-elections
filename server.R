@@ -36,7 +36,7 @@ shinyServer(
     # DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG
     # *******************************************************************************************************
     
-    DEBUG <<- FALSE
+    DEBUG <<- TRUE
     
     if(DEBUG){
       

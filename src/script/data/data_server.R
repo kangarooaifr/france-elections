@@ -117,7 +117,7 @@ data_Server <- function(id, r, path) {
       cat("input$select_dataset =", input$select_dataset, "\n")
       
       # -- Check: 2022 file format...
-      if(input$select_dataset == "Presidentielle_2022_1er_Tour.txt"){
+      if(input$select_dataset == "xxx"){
         
         COL_CLASSES_BEFORE_CANDIDATES <- COL_CLASSES_BEFORE_CANDIDATES_2022
         

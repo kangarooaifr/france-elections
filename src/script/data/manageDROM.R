@@ -3,7 +3,7 @@
 check_drom_code <- function(data){
   
   
-  cat("Checking DROM code")
+  cat("Checking DROM code \n")
   
   
   # ---------------------------------------------------------
