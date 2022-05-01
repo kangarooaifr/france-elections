@@ -42,11 +42,11 @@ body <- dashboardBody(
     tabItems(
     
         tabItem(tabName = "map",
-                h2("Résultats par Commune"),
                 
                 fluidRow(
                     column(width = 2,
                            select_dataset_UI("data"),
+                           geojson_UI("cities"),
                            filters_UI("cities"),
                            hide_show_UI("cities"),
                            map_search_Input("map")

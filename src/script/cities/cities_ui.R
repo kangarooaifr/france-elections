@@ -28,6 +28,20 @@ hide_show_UI <- function(id){
 }
 
 
+# -- available geoJson files
+geojson_UI <- function(id){
+  
+  # namespace
+  ns <- NS(id)
+  
+  # init buttons (toggle in server)
+  wellPanel(
+    uiOutput(ns("select_geojson")),
+    uiOutput(ns("action_geojson")))
+  
+}
+
+
 # -- filter_by_dep
 filters_UI <- function(id){
   

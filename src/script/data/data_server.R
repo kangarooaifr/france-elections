@@ -27,7 +27,7 @@ data_Server <- function(id, r, path) {
     r$dataset <- reactiveVal(NULL)
     
     # candidates
-    list_candidates <- NULL
+    r$list_candidates <- reactiveVal(NULL)
     nb_cand <- NULL
     selected_candidate <- reactiveVal(NULL)
     
@@ -158,7 +158,7 @@ data_Server <- function(id, r, path) {
       # ***************************************************************************************
       # -- !!!DATA!!! FORMAT 2022 STUFF .............
       
-      if(input$select_dataset == "Presidentielle_2022_2eme_Tour.txt"){
+      if(input$select_dataset == "xxx"){
         
         dataset <- fit_format(dataset, COLS_TO_ADD, COLS_TO_DELETE)
         nb_col_before_candidate <- 21
@@ -191,9 +191,10 @@ data_Server <- function(id, r, path) {
       
       # register filter
       r$filter_by_name(list_candidates)
+      r$list_candidates(list_candidates)
       
       # feature engineering
-      dataset <- feat_engineering(dataset, COLS_TO_SUM, list_candidates)
+      #dataset <- feat_engineering(dataset, COLS_TO_SUM, list_candidates)
       r$dataset(dataset)
 
       # DEBUG
@@ -211,11 +212,26 @@ data_Server <- function(id, r, path) {
     observeEvent({r$raw_data_map()
                  r$dataset()}, {
       
+      req(!is.null(r$raw_data_map()))
+                   
       cat("New dataset available, size", dim(r$dataset()), "\n")
       
       # init
       data_map <- r$raw_data_map()
       dataset <- r$dataset()
+      
+      
+      # ************ Feat Engineering
+      dataset <- if(dim(data_map@data)[1] == 566)
+        feat_engineering_circo(dataset, COLS_TO_SUM, r$list_candidates())
+      else
+        feat_engineering(dataset, COLS_TO_SUM, r$list_candidates())
+      
+      if(DEBUG)
+        feat_dataset <<- dataset
+      
+      # ************ Feat Engineering
+      
       
       # add candidates (match by codgeo)
       cat("Matching codgeo with candidate votes... \n")

@@ -6,6 +6,7 @@
 
 # -- Library
 library(geojsonio)
+library(shinyjs)
 
 
 # -------------------------------------
@@ -43,48 +44,106 @@ cities_Server <- function(id, r, path) {
     # -- declare objects
     list_dep <- reactiveVal(NULL)
     
+    # list available GeoJsons
+    list_geojson <- list("Communes" = "a-com2022.json",
+                         "Circonscriptions législatives 2012" = "france-circonscriptions-legislatives-2012.json")
     
+    # loaded geojson
+    is_loaded_geojson <- reactiveVal(rep(FALSE, length(list_geojson)))
+
+    
+    # -------------------------------------
+    # Outputs
+    # -------------------------------------
+    
+    # select geojson
+    output$select_geojson <- renderUI(selectizeInput(ns("select_geojson"), label = "Contours", choices = list_geojson))
+    
+    # show hide action button
+    output$action_geojson <- renderUI(actionButton(ns("load_geojson"), label = "Charger"))
+    
+    
+    # -------------------------------------
+    # Observe load_geojson
+    # -------------------------------------
+    
+    observeEvent(input$load_geojson, {
+      
+      # -- Load geojson data
+      cat("Loading geojson file... \n")
+      
+      progressSweetAlert(id = "progress", session = session, value = 10, total = 100, display_pct = TRUE, striped = TRUE, 
+                         title = "Chargement du fichier des contours...")
+      
+      geojson <- geojson_read(file.path(path$resource, input$select_geojson), what = "sp")
+      
+      updateProgressBar(session, "progress", value = 100, total = 100, title = "Chargement terminé")
+      closeSweetAlert(session)
+      
+      cat("Loading geojson file done! \n")
+      
+      # ******************* Hack for circo...
+      
+      if(dim(geojson@data)[1] == 566){
+        
+        geojson@data$codgeo <- geojson@data$ID
+        geojson@data$libgeo <- paste(geojson@data$nom_dpt, "Circ. =", geojson@data$num_circ)
+        geojson@data$dep <- geojson@data$code_dpt
+          
+      }
+      # *******************
+      
+      # store
+      r$raw_data_map(geojson)
+      
+      # store list dept
+      list_dep(c("Tous", sort(unique(r$raw_data_map()@data$dep))))
+      
+      
+    })
+      
+
     # -------------------------------------
     # Observe r$proxymap
     # -------------------------------------
     
-    observeEvent(r$proxymap, {
-      
-      cat("Proxymap is now available \n")
-      
-      # -- Load geojson data
-      if(!exists("raw_data_map")){
-        
-        cat("Loading geojson file... \n")
-        
-        progressSweetAlert(id = "progress", session = session, value = 10, total = 100, display_pct = TRUE, striped = TRUE, 
-                           title = "Chargement du contour des communes...")
-        
-        geojson <- geojson_read(file.path(path$resource, "a-com2022.json"), what = "sp")
-        
-        updateProgressBar(session, "progress", value = 100, total = 100, title = "Chargement terminé")
-        closeSweetAlert(session)
-        
-        cat("Loading geojson file done! \n")
-        
-        if(DEBUG){
-          raw_data_map <<- geojson
-        }
-        
-        # store
-        r$raw_data_map(geojson)
-        
-      } else {
-        
-        r$raw_data_map(raw_data_map)
-        
-      }
-      
-      # store list dept
-      list_dep(c("All", unique(r$raw_data_map()@data$dep)))
-      
-      
-    })
+    # observeEvent(r$proxymap, {
+    #   
+    #   cat("Proxymap is now available \n")
+    #   
+    #   # -- Load geojson data
+    #   if(!exists("raw_data_map")){
+    #     
+    #     cat("Loading geojson file... \n")
+    #     
+    #     progressSweetAlert(id = "progress", session = session, value = 10, total = 100, display_pct = TRUE, striped = TRUE, 
+    #                        title = "Chargement du contour des communes...")
+    #     
+    #     geojson <- geojson_read(file.path(path$resource, "a-com2022.json"), what = "sp")
+    #     
+    #     updateProgressBar(session, "progress", value = 100, total = 100, title = "Chargement terminé")
+    #     closeSweetAlert(session)
+    #     
+    #     cat("Loading geojson file done! \n")
+    #     
+    #     if(DEBUG){
+    #       raw_data_map <<- geojson
+    #     }
+    #     
+    #     # store
+    #     r$raw_data_map(geojson)
+    #     
+    #   } else {
+    #     
+    #     r$raw_data_map(raw_data_map)
+    #     
+    #   }
+    #   
+    #   # store list dept
+    #   list_dep(c("Tous", unique(r$raw_data_map()@data$dep)))
+    #   
+    #   
+    # })
     
     
     # -------------------------------------
@@ -114,7 +173,7 @@ cities_Server <- function(id, r, path) {
       cat("New filters submitted : \n")
       cat("- by dep =", input$filter_by_dep, "\n")
       
-      if(!"All" %in% input$filter_by_dep){
+      if(!"Tous" %in% input$filter_by_dep){
         
         tmp_map <- r$data_map()
         tmp_map <- tmp_map[tmp_map@data$dep %in% input$filter_by_dep, ]
@@ -161,6 +220,9 @@ cities_Server <- function(id, r, path) {
         filtered_map@data$libgeo, paste("Résultat = ", round(filtered_map@data[, (colnames(filtered_map@data) %in% col_name)], digits = 2), "%")
       ) %>% lapply(htmltools::HTML)
       
+      if(DEBUG)
+        debug_labels <<- labels
+      
       cat("Building color palette \n")
       updateProgressBar(session, "progress", value = 40, total = 100, title = "Création de la palette couleur...")
       max <- 100
@@ -170,8 +232,11 @@ cities_Server <- function(id, r, path) {
       
       pal <- makePalette(min = 0, max = max)
       
+      if(DEBUG)
+        debug_pal <<- pal
+      
       cat("Add / Update polygons \n")
-      updateProgressBar(session, "progress", value = 50, total = 100, title = "Affichage des communes...")
+      updateProgressBar(session, "progress", value = 50, total = 100, title = "Affichage des contours...")
       r$proxymap %>%
         clearGroup("cities") %>%
         addPolygons(data = filtered_map, 
