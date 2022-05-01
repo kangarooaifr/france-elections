@@ -82,7 +82,7 @@ feat_engineering_circo <- function(data, cols_to_keep, candidates){
       )
     
   # compute score %
-  ouput[candidates] <- ouput[candidates]/ouput$Exprimés*100
+  #ouput[candidates] <- ouput[candidates]/ouput$Exprimés*100
   
   # return
   ouput

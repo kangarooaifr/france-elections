@@ -9,6 +9,7 @@ library(shinyWidgets)
 
 library(dplyr)
 library(stringr)
+library(geojsonio)
 
 # -- Declare path
 
@@ -38,7 +39,7 @@ shinyServer(
     # DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG
     # *******************************************************************************************************
     
-    DEBUG <<- FALSE
+    DEBUG <<- TRUE
     
     if(DEBUG){
       

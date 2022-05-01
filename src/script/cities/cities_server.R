@@ -6,7 +6,6 @@
 
 # -- Library
 library(geojsonio)
-library(shinyjs)
 
 
 # -------------------------------------
@@ -88,7 +87,7 @@ cities_Server <- function(id, r, path) {
       if(dim(geojson@data)[1] == 566){
         
         geojson@data$codgeo <- geojson@data$ID
-        geojson@data$libgeo <- paste(geojson@data$nom_dpt, "Circ. =", geojson@data$num_circ)
+        geojson@data$libgeo <- paste(geojson@data$nom_dpt, "Circonscription n°", geojson@data$num_circ)
         geojson@data$dep <- geojson@data$code_dpt
           
       }
@@ -219,8 +218,17 @@ cities_Server <- function(id, r, path) {
       updateProgressBar(session, "progress", value = 20, total = 100, title = "Création des étiquettes...")
 
       labels <- sprintf(
-        "<strong>%s</strong><br/>%s",
-        filtered_map@data$libgeo, paste("Résultat = ", round(filtered_map@data[, (colnames(filtered_map@data) %in% col_name)], digits = 2), "%")
+        "<strong>%s</strong><br/><br/>%s<br/><br/>%s<br/>%s<br/>%s<br/>%s<br/>%s<br/>%s",
+        filtered_map@data$libgeo, 
+        paste(col_name, ":",
+              filtered_map@data[, (colnames(filtered_map@data) %in% col_name)], "voix,",
+              round(filtered_map@data[, (colnames(filtered_map@data) %in% col_name)] / filtered_map@data$Exprimés * 100, digits = 2), "%"),
+        paste("Inscrits :", filtered_map@data$Inscrits),
+        paste("Abstentions :", filtered_map@data$Abstentions, "(", round(filtered_map@data$Abstentions / filtered_map@data$Inscrits * 100, digits = 2), "% )"),
+        paste("Votants :", filtered_map@data$Votants),
+        paste("Blancs :", filtered_map@data$Blancs),
+        paste("Nuls :", filtered_map@data$Nuls),
+        paste("Exprimés :", filtered_map@data$Exprimés)
       ) %>% lapply(htmltools::HTML)
       
       if(DEBUG)
@@ -231,7 +239,9 @@ cities_Server <- function(id, r, path) {
       max <- 100
       if(color_mode()){
         cat("Compute % max \n")
-        max <- max(filtered_map@data[col_name], na.rm = TRUE)}
+        #max <- max(filtered_map@data[col_name], na.rm = TRUE)
+        max <- max(filtered_map@data[col_name] / filtered_map@data$Exprimés * 100, na.rm = TRUE)
+        }
       
       pal <- makePalette(min = 0, max = max)
       
@@ -244,11 +254,13 @@ cities_Server <- function(id, r, path) {
         clearGroup("cities") %>%
         addPolygons(data = filtered_map, 
                     weight = 1, 
-                    color = ~pal(filtered_map[[col_name]]),
-                    fillColor = ~pal(filtered_map[[col_name]]), 
+                    color = ~pal(filtered_map[[col_name]] / filtered_map@data$Exprimés * 100),
+                    fillColor = ~pal(filtered_map[[col_name]] / filtered_map@data$Exprimés * 100), 
                     fillOpacity = input$select_opacity / 100,
                     group = "cities", 
-                    label = labels)
+                    label = labels,
+                    labelOptions = labelOptions(style = list(
+                                                  "font-size" = "12px")))
       
       updateProgressBar(session, "progress", value = 100, total = 100, title = "Terminé")
       closeSweetAlert(session)
