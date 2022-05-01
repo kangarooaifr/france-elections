@@ -38,6 +38,7 @@ cities_Server <- function(id, r, path) {
     filter_by_dep <- reactiveVal(NULL)
     filter_by_name <- reactiveVal(NULL)
     color_mode <- reactiveVal(NULL)
+    color_opacity <- reactiveVal(NULL)
     
     filtered_map <- reactiveVal(NULL)
     
@@ -188,6 +189,7 @@ cities_Server <- function(id, r, path) {
       
       filter_by_name(input$filter_by_name)
       color_mode(input$color_mode)
+      color_opacity(input$select_opacity)
       
     })
     
@@ -198,7 +200,8 @@ cities_Server <- function(id, r, path) {
     
     observeEvent({filtered_map()
       filter_by_name()
-      color_mode()}, {
+      color_mode()
+      color_opacity()}, {
                     
       cat("New filtered map is available \n")
       
@@ -240,9 +243,12 @@ cities_Server <- function(id, r, path) {
       r$proxymap %>%
         clearGroup("cities") %>%
         addPolygons(data = filtered_map, 
-                    weight = 1, color = ~pal(filtered_map[[col_name]]),
-                    fillColor = ~pal(filtered_map[[col_name]]), fillOpacity = 0.8,
-                    group = "cities", label = labels)
+                    weight = 1, 
+                    color = ~pal(filtered_map[[col_name]]),
+                    fillColor = ~pal(filtered_map[[col_name]]), 
+                    fillOpacity = input$select_opacity / 100,
+                    group = "cities", 
+                    label = labels)
       
       updateProgressBar(session, "progress", value = 100, total = 100, title = "Terminé")
       closeSweetAlert(session)

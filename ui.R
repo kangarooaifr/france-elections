@@ -30,9 +30,8 @@ rm(nm)
 
 sidebar <- dashboardSidebar(
     sidebarMenu(
-        menuItem("Carte", tabName = "map", icon = icon("map"), selected = TRUE)
-    )
-)
+        menuItem("Carte", tabName = "map", icon = icon("map"), selected = TRUE)), 
+    collapsed = TRUE)
 
 
 # -- Define Body UI
@@ -44,21 +43,20 @@ body <- dashboardBody(
         tabItem(tabName = "map",
                 
                 fluidRow(
+                  
                     column(width = 2,
                            select_dataset_UI("data"),
                            geojson_UI("cities"),
                            filters_UI("cities"),
                            hide_show_UI("cities"),
-                           map_search_Input("map")
-                           ),
+                           map_search_Input("map")),
+                    
                     column(width = 10,
                            map_UI("map"),br(),
-                           p("© Philippe PERET - KANGAROO.AI | Version 1.1 | Source : https://www.data.gouv.fr/fr/pages/donnees-des-elections/")
-                           )
-                )
-                
-        )
-    )
+                           p("© Philippe PERET - KANGAROO.AI | Version 1.2 | ",
+                           a("LinkedIn", href="https://www.linkedin.com/in/philippeperet/"), "|",
+                           a("Source", href="https://www.data.gouv.fr/fr/pages/donnees-des-elections/"))))
+    ))
 )
 
 

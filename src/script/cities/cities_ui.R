@@ -61,6 +61,15 @@ filters_UI <- function(id){
     checkboxInput(ns("color_mode"), label = "Couleurs : activer % max", value = TRUE, width = NULL),
     p("Calcul des couleurs en fonction du % max du candidat dans la zone sélectionnée (sinon de 0 à 100%)"),
     
+    # opacity
+    sliderInput(
+      inputId = ns("select_opacity"),
+      label = "Opacité",
+      min = 0,
+      max = 100,
+      value = 80,
+      step = 5),
+    
     actionButton(ns("submit_filters"), label = "Afficher")
   )
   
