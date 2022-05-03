@@ -44,7 +44,7 @@ shinyServer(
     if(DEBUG){
       
       source(file.path(path$script, "map/map_server.R"))
-      source(file.path(path$script, "cities/cities_server.R"), encoding = 'UTF-8')
+      source(file.path(path$script, "polygon/polygon_server.R"), encoding = 'UTF-8')
       
     }
     
@@ -56,7 +56,7 @@ shinyServer(
     r <- reactiveValues()
     
     # ----------------------------------------------------------------------
-    # - dataset: from data module, contains the data by candidate / cities
+    # - dataset: from data module, contains the data by candidate / polygon
     
     # - filter_by_name
     
@@ -72,7 +72,7 @@ shinyServer(
     map_Server(id = "map", r = r, path = path)
     
     # polygon city-level
-    cities_Server(id = "cities", r = r, path = path)
+    polygon_Server(id = "polygon", r = r, path = path)
     
   }
 )

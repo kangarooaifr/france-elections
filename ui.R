@@ -46,9 +46,9 @@ body <- dashboardBody(
                   
                     column(width = 2,
                            select_dataset_UI("data"),
-                           geojson_UI("cities"),
-                           #filters_UI("cities"),
-                           #hide_show_UI("cities"),
+                           geojson_UI("polygon"),
+                           #filters_UI("polygon"),
+                           #hide_show_UI("polygon"),
                            map_search_Input("map")),
                     
                     column(width = 8,
@@ -58,8 +58,8 @@ body <- dashboardBody(
                            a("Source", href="https://www.data.gouv.fr/fr/pages/donnees-des-elections/"))),
                     
                     column(width = 2,
-                           filters_UI("cities"),
-                           hide_show_UI("cities"))
+                           filters_UI("polygon"),
+                           hide_show_UI("polygon"))
                     
                     )
     ))

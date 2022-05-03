@@ -12,7 +12,7 @@ library(geojsonio)
 # Server logic
 # -------------------------------------
 
-cities_Server <- function(id, r, path) {
+polygon_Server <- function(id, r, path) {
   moduleServer(id, function(input, output, session) {
     
     # -------------------------------------
