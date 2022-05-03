@@ -50,6 +50,9 @@ feat_engineering <- function(data, cols_to_keep, candidates){
   cat("- Cols to sum :", cols_to_keep, "\n")
   cat("- Candidates :", candidates, "\n")
   
+  # check DROM dept code (outre mer, they sometimes put ZA... instead of 97x)
+  data <- check_drom_code(data)
+  
   # build codgeo from dep + commune
   cat("Build geocod column \n")
   data$codgeo <- paste0(data$Code.du.département, data$ Code.de.la.commune)

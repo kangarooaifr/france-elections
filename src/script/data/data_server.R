@@ -175,16 +175,12 @@ data_Server <- function(id, r, path) {
       # ***************************************************************************************
       
       # check DROM dept code (outre mer, they sometimes put ZA... instead of 97x)
-      dataset <- check_drom_code(dataset)
+      #dataset <- check_drom_code(dataset) -- moved to feat_engineering (because it's only for needed for commmunes..)
       
       
       # pre processing (one col per candidate)
       dataset <- pre_processing(dataset, nb_cand = nb_cand, nb_col_before_candidate, nb_col_candidate)
      
-      if(DEBUG){
-        pre_dataset <<- dataset
-      }
-      
       # get list of candidates
       list_candidates <- colnames(dataset[(nb_col_before_candidate + 1):dim(dataset)[2]])
       cat("Candidates :", list_candidates, "\n")
@@ -194,12 +190,14 @@ data_Server <- function(id, r, path) {
       r$list_candidates(list_candidates)
       
       # feature engineering
-      #dataset <- feat_engineering(dataset, COLS_TO_SUM, list_candidates)
+      #dataset <- feat_engineering(dataset, COLS_TO_SUM, list_candidates) -- moved to next bloc
+      
+      # store
       r$dataset(dataset)
 
       # DEBUG
       if(DEBUG){
-        feat_dataset <<- dataset
+        pre_dataset <<- dataset
       }
       
     })
@@ -251,15 +249,6 @@ data_Server <- function(id, r, path) {
       r$data_map(data_map)
       
     }, ignoreNULL = TRUE, ignoreInit = TRUE)
-    
-    
-    # >> turn raw_data_map and data_map into r$
-    # >> fill raw_data_map in cities
-    # >> listen to raw_data_map in data and feed with preprocessing result:
-    #    output of preprocessing must be candidate result by row / cities in cols
-    #    store output in r$data_map
-    # >> listen to r$data_map in cities:
-    #    from there you can apply candidate / dept filter
     
     
   })
