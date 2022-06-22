@@ -12,18 +12,28 @@
 # -------------------------------------
 
 # -- Select dataset
+# select_dataset_UI <- function(id){
+#   
+#   # namespace
+#   ns <- NS(id)
+#   
+#   # UI
+#   wellPanel(
+#     
+#     # init input (empty choices)
+#     selectizeInput(ns("select_dataset"), label = "Résultats", choices = NULL),
+#     actionButton(ns("load_dataset"), label = "Charger")
+#     
+#   )
+#   
+# }
+
+
 select_dataset_UI <- function(id){
   
   # namespace
   ns <- NS(id)
-  
-  # UI
-  wellPanel(
-    
-    # init input (empty choices)
-    selectizeInput(ns("select_dataset"), label = "Résultats", choices = NULL),
-    actionButton(ns("load_dataset"), label = "Charger")
-    
-  )
-  
+
+  uiOutput(ns("select_dataset"))
+
 }

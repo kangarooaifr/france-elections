@@ -60,7 +60,7 @@ data_Server <- function(id, r, path) {
                                        "X..Exp.Ins" = "numeric",      
                                        "X..Exp.Vot" = "numeric")
     
-    COL_CLASSES_BEFORE_CANDIDATES_2022 <- c("Code.du.département" = "character",
+    COL_CLASSES_BEFORE_CANDIDATES_TMP <- c("Code.du.département" = "character",
                                        "Libellé.du.département" = "character",
                                        "Code.de.la.commune" = "character",
                                        "Libellé.de.la.commune" = "character",
@@ -80,13 +80,22 @@ data_Server <- function(id, r, path) {
                                        "X..Exp.Ins" = "numeric",      
                                        "X..Exp.Vot" = "numeric")
     
-    COL_CLASSES_CANDIDATES <- c("N.Panneau" = "numeric",
-                                "Sexe" = "character",
-                                "Nom" = "character",
-                                "Prénom" = "character",
-                                "Voix" = "numeric",
-                                "X..Voix.Ins" = "numeric",
-                                "X..Voix.Exp" = "numeric")
+    COL_CLASSES_CANDIDATES_PRESIDENTIELLE <- c("N.Panneau" = "numeric",
+                                               "Sexe" = "character",
+                                               "Nom" = "character",
+                                               "Prénom" = "character",
+                                               "Voix" = "numeric",
+                                               "X..Voix.Ins" = "numeric",
+                                               "X..Voix.Exp" = "numeric")
+    
+    COL_CLASSES_CANDIDATES_LEGISLATIVES <- c("N.Panneau" = "numeric",
+                                             "Sexe" = "character",
+                                             "Nom" = "character",
+                                             "Prénom" = "character",
+                                             "Nuance" = "character",
+                                             "Voix" = "numeric",
+                                             "X..Voix.Ins" = "numeric",
+                                             "X..Voix.Exp" = "numeric")
     
     # -- add
     COLS_TO_ADD <- c("Code.de.la.circonscription",
@@ -97,39 +106,84 @@ data_Server <- function(id, r, path) {
     # -- drop
     COLS_TO_DELETE <- c("Etat saisie")
     
+    # -- temporary result
+    temp_result <- FALSE
+    
     
     # -------------------------------------
     # Init: 
     # -------------------------------------
     
     # get list of dataset and update input
-    data_list <- list.files(path$data, full.names = FALSE, recursive = TRUE, include.dirs = FALSE)
-    cat("Available dataset :", length(data_list), "\n")
-    updateSelectizeInput(session, "select_dataset", choices = data_list, server = TRUE)
+    data_list <- list.files(path$data, pattern = "Presidentielles_", full.names = FALSE, recursive = TRUE, include.dirs = FALSE)
+    cat("Available datasets :", length(data_list), "\n")
+    
+    # build data frame (remove ext, split file name into cols)
+    data_list <- data.frame(file.name = data_list)
+    data_list[c('election', 'annee', 'tour')] <- str_split_fixed(sub('\\.txt$', '', data_list$file.name), '_', 3)
     
     
+    # -------------------------------------
+    # dataset selection
+    # -------------------------------------
+    
+    # -- define radio buttons
+    output$select_dataset <- renderUI(
+      wellPanel(
+        
+        h4("Présidentielles"),
+
+        # year
+        radioButtons(inputId = ns("election_year"),
+                     label = "Années",
+                     choices = unique(data_list$annee),
+                     selected = input$election_year,
+                     inline = TRUE),
+        
+        # turn
+        radioButtons(inputId = ns("election_turn"),
+                     label = "Tour",
+                     choices =  unique(data_list$tour),
+                     selected = input$election_turn,
+                     inline = TRUE),
+        
+        # load
+        actionButton(ns("load_dataset"), label = "Charger")
+        
+        ))
+    
+      
     # -------------------------------------
     # Event observers: load_dataset
     # -------------------------------------
     
     observeEvent(input$load_dataset, {
       
-      cat("input$select_dataset =", input$select_dataset, "\n")
+      cat("Load dataset \n")
+      cat("- election_year =", input$election_year, "\n")
+      cat("- election_turn =", input$election_turn, "\n")
       
-      # -- Check: 2022 file format...
-      if(input$select_dataset == "xxx"){
-        
-        COL_CLASSES_BEFORE_CANDIDATES <- COL_CLASSES_BEFORE_CANDIDATES_2022
-        
-      }
+      # get target file based on inputs
+      target_file <- data_list[data_list$annee == input$election_year &
+                               data_list$tour == input$election_turn, ]$file.name
       
+      
+      # -- Check: for tmp results (before being official)
+      if(temp_result)
+        COL_CLASSES_BEFORE_CANDIDATES <- COL_CLASSES_BEFORE_CANDIDATES_TMP
+      
+      # -- Candidate cols depends on election type..
+      COL_CLASSES_CANDIDATES <- COL_CLASSES_CANDIDATES_PRESIDENTIELLE
+      
+
       # get length cols
       nb_col_before_candidate <- length(COL_CLASSES_BEFORE_CANDIDATES)
       nb_col_candidate <- length(COL_CLASSES_CANDIDATES)
       
+      # build target file
+      target_file <- file.path(path$data, target_file)
+      
       # read first line
-      target_file <- file.path(path$data, input$select_dataset)
-      #first_line <- read.csv(target_file, nrows = 1, header = TRUE, sep = ";")
       first_line <- read.csv(target_file, nrows = 1, header = TRUE, sep = ";", fileEncoding = "latin1")
       
       # get nb of candidates
@@ -143,43 +197,25 @@ data_Server <- function(id, r, path) {
       cat("Loading dataset :", target_file, "\n")
       progressSweetAlert(id = "progress", session = session, value = 10, total = 100, display_pct = TRUE, striped = TRUE, 
                          title = "Chargement des résultats...")
-      #dataset <- read.csv(target_file, header = TRUE, sep = ";", dec = ",", colClasses = colClasses)
       dataset <- read.csv(target_file, header = TRUE, sep = ";", dec = ",", colClasses = colClasses, fileEncoding = "latin1")
       
       updateProgressBar(session, "progress", value = 100, total = 100, title = "Chargement terminé")
       closeSweetAlert(session)
       cat("Loading dataset done! \n")
-
-      # -- DEBUG
-      if(DEBUG){
-        raw_dataset <<- dataset
-      }
       
-      # ***************************************************************************************
-      # -- !!!DATA!!! FORMAT 2022 STUFF .............
       
-      if(input$select_dataset == "xxx"){
+      # -- Check: for tmp results (before being official)
+      if(temp_result){
         
         dataset <- fit_format(dataset, COLS_TO_ADD, COLS_TO_DELETE)
         nb_col_before_candidate <- 21
-        
         nb_cand <- 2
-        
-        # -- DEBUG
-        if(DEBUG){
-          format_dataset <<- dataset
-        }
         
       }
 
-      # ***************************************************************************************
-      
-      # check DROM dept code (outre mer, they sometimes put ZA... instead of 97x)
-      #dataset <- check_drom_code(dataset) -- moved to feat_engineering (because it's only for needed for commmunes..)
-      
-      
       # pre processing (one col per candidate)
       dataset <- pre_processing(dataset, nb_cand = nb_cand, nb_col_before_candidate, nb_col_candidate)
+        
      
       # get list of candidates
       list_candidates <- colnames(dataset[(nb_col_before_candidate + 1):dim(dataset)[2]])
@@ -189,16 +225,8 @@ data_Server <- function(id, r, path) {
       r$filter_by_name(list_candidates)
       r$list_candidates(list_candidates)
       
-      # feature engineering
-      #dataset <- feat_engineering(dataset, COLS_TO_SUM, list_candidates) -- moved to next bloc
-      
       # store
       r$dataset(dataset)
-
-      # DEBUG
-      if(DEBUG){
-        pre_dataset <<- dataset
-      }
       
     })
     
@@ -238,12 +266,6 @@ data_Server <- function(id, r, path) {
       new_cols <- cols[!cols %in% "codgeo"]
       
       data_map@data[new_cols] <- dataset[match(data_map@data$codgeo, dataset$codgeo), new_cols]
-      
-      #data_map@data[list_candidates] <- dataset[match(data_map@data$codgeo, dataset$codgeo), (nb_col_before_candidate+1):dim(dataset)[2]
-      
-      if(DEBUG){
-        data_map <<- data_map
-      }
       
       # store
       r$data_map(data_map)
