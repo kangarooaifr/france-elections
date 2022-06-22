@@ -30,7 +30,7 @@ rm(nm)
 
 sidebar <- dashboardSidebar(
     sidebarMenu(
-        menuItem("Carte", tabName = "map", icon = icon("map"), selected = TRUE)), 
+      menuItem("Présidentielles", tabName = "presidentielles", icon = icon("map"), selected = TRUE)),
     collapsed = TRUE)
 
 
@@ -40,29 +40,29 @@ body <- dashboardBody(
     
     tabItems(
     
-        tabItem(tabName = "map",
+        # -- Presidentielles
+        tabItem(tabName = "presidentielles",
                 
                 fluidRow(
                   
                     column(width = 2,
                            select_dataset_UI("data"),
                            geojson_UI("polygon"),
-                           #filters_UI("polygon"),
-                           #hide_show_UI("polygon"),
-                           map_search_Input("map")),
+                           paypal_btn()),
                     
                     column(width = 8,
                            map_UI("map"),br(),
-                           p("© Philippe PERET - KANGAROO.AI | Version 1.2 | ",
+                           p("© 2022 Philippe PERET / KANGAROO.AI | Version 1.3 | ",
                            a("LinkedIn", href="https://www.linkedin.com/in/philippeperet/"), "|",
                            a("Source", href="https://www.data.gouv.fr/fr/pages/donnees-des-elections/"))),
                     
                     column(width = 2,
                            filters_UI("polygon"),
-                           hide_show_UI("polygon"))
-                    
-                    )
-    ))
+                           hide_show_UI("polygon"),
+                           map_search_Input("map"))))
+    
+    
+    )
 )
 
 
@@ -70,7 +70,7 @@ body <- dashboardBody(
 
 dashboardPage(
     
-    dashboardHeader(title = "Elections France"),
+    dashboardHeader(title = "France Elections"),
     sidebar,
     body
     
