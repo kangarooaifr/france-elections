@@ -37,6 +37,8 @@ sidebar <- dashboardSidebar(
 # -- Define Body UI
 
 body <- dashboardBody(
+  
+    tags$head(includeHTML(("./src/google/google-analytics.html"))),
     
     tabItems(
     
@@ -67,12 +69,11 @@ body <- dashboardBody(
 
 
 # -- Put them together into a dashboard
-
 dashboardPage(
-    
-    dashboardHeader(title = "France Elections"),
-    sidebar,
-    body
+  
+  dashboardHeader(title = "France Elections"),
+  sidebar,
+  body
     
 )
 
