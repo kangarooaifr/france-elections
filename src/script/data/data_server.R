@@ -197,7 +197,11 @@ data_Server <- function(id, r, path) {
       cat("Loading dataset :", target_file, "\n")
       progressSweetAlert(id = "progress", session = session, value = 10, total = 100, display_pct = TRUE, striped = TRUE, 
                          title = "Chargement des résultats...")
+      
       dataset <- read.csv(target_file, header = TRUE, sep = ";", dec = ",", colClasses = colClasses, fileEncoding = "latin1")
+      
+      if(DEBUG)
+        raw_dataset <<- dataset
       
       updateProgressBar(session, "progress", value = 100, total = 100, title = "Chargement terminé")
       closeSweetAlert(session)
@@ -211,17 +215,23 @@ data_Server <- function(id, r, path) {
         nb_col_before_candidate <- 21
         nb_cand <- 2
         
+        if(DEBUG)
+          fit_dataset <<- dataset
+        
       }
 
       # pre processing (one col per candidate)
       dataset <- pre_processing(dataset, nb_cand = nb_cand, nb_col_before_candidate, nb_col_candidate)
-        
+      
+      if(DEBUG)
+        pre_dataset <<- dataset
      
       # get list of candidates
       list_candidates <- colnames(dataset[(nb_col_before_candidate + 1):dim(dataset)[2]])
       cat("Candidates :", list_candidates, "\n")
       
       # register filter
+      r$filter_by_name_label("Candidats")
       r$filter_by_name(list_candidates)
       r$list_candidates(list_candidates)
       
@@ -232,18 +242,18 @@ data_Server <- function(id, r, path) {
     
     
     # -------------------------------------
-    # Event observers: r$raw_data_map()
+    # Event observers: r$geojson()
     # -------------------------------------
     
-    observeEvent({r$raw_data_map()
+    observeEvent({r$geojson()
                  r$dataset()}, {
       
-      req(!is.null(r$raw_data_map()))
+      req(!is.null(r$geojson()))
                    
       cat("New dataset available, size", dim(r$dataset()), "\n")
       
       # init
-      data_map <- r$raw_data_map()
+      data_map <- r$geojson()
       dataset <- r$dataset()
       
       

@@ -24,16 +24,31 @@ polygon_Server <- function(id, r, path) {
     # get namespace
     ns <- session$ns
     
+    # config
+    module <- paste0("[", id, "]")
+    
     # -- declare communication objects
     
     # Listen to this to know when geojson data is loaded from file
-    r$raw_data_map <- reactiveVal(NULL)
+    r$geojson <- reactiveVal(NULL)
     
     # Feed this with additional @data cols to use for map
     r$data_map <- reactiveVal(NULL)
     
+    # Feed with filtered dataset (to display polygons)
+    r$filtered_dataset <- reactiveVal(NULL)
+    
+    
     # Feed this to apply filters
     r$filter_by_name <- reactiveVal(NULL)
+    r$filter_by_name_label <- reactiveVal(NULL)
+    r$election_type <- reactiveVal(NULL)
+    
+    # to store whether commune / circo are loaded
+    geojson_type <- reactiveVal(NULL)
+    
+    
+    
     filter_by_dep <- reactiveVal(NULL)
     filter_by_name <- reactiveVal(NULL)
     color_mode_max <- reactiveVal(NULL)
@@ -63,6 +78,52 @@ polygon_Server <- function(id, r, path) {
     # show hide action button
     output$action_geojson <- renderUI(actionButton(ns("load_geojson"), label = "Charger"))
     
+    # warning - dataset
+    output$warning_dataset <- renderUI({
+      
+      if(is.null(r$dataset()))
+        box(title = "Message", width = 12, solidHeader = TRUE, status = "warning",
+            "Chargez un résultat d'élection")
+    })
+    
+    # warning - geojson
+    output$warning_geojson <- renderUI({
+      
+      # whether or not a geojson is loaded 
+      if(is.null(r$geojson()))
+        box(title = "Message", width = 12, solidHeader = TRUE, status = "danger",
+            "Chargez un fichier de contours")
+      
+    })
+    
+    
+    output$filter_panel <- renderUI({
+      
+      # if both are loaded
+      if(!is.null(r$dataset()) & !is.null(r$geojson())){
+        wellPanel(
+            
+            # init (empty choices)
+            selectizeInput(ns("filter_by_name"), label = "Candidat", choices = NULL),
+            selectizeInput(ns("filter_by_dep"), label = "Départements", choices = LISTE_DES_DEPARTEMENTS, multiple = TRUE),
+            
+            # color palette
+            checkboxInput(ns("color_mode_min"), label = "Couleurs : activer % min", value = TRUE, width = NULL),
+            checkboxInput(ns("color_mode_max"), label = "Couleurs : activer % max", value = TRUE, width = NULL),
+            p("Calcul des couleurs en fonction des % du candidat dans la zone sélectionnée (sinon de 0 à 100%)"),
+            
+            # opacity
+            sliderInput(
+              inputId = ns("select_opacity"),
+              label = "Opacité",
+              min = 0,
+              max = 100,
+              value = 80,
+              step = 5),
+            
+            actionButton(ns("submit_filters"), label = "Afficher"))}
+    })
+    
     
     # -------------------------------------
     # Observe load_geojson
@@ -73,13 +134,22 @@ polygon_Server <- function(id, r, path) {
       # -- Load geojson data
       cat("Loading geojson file... \n")
       
-      progressSweetAlert(id = "progress", session = session, value = 10, total = 100, display_pct = TRUE, striped = TRUE, 
-                         title = "Chargement du fichier des contours...")
+      # monitoring
+      start <- getTimestamp()
       
-      geojson <- geojson_read(file.path(path$resource, input$select_geojson), what = "sp")
+      # load
+      withProgress(message = 'Chargement...', value = 0.25, {
+        geojson <- geojson_read(file.path(path$resource, input$select_geojson), what = "sp")})
       
-      updateProgressBar(session, "progress", value = 100, total = 100, title = "Chargement terminé")
-      closeSweetAlert(session)
+      # monitoring
+      end <- getTimestamp()
+      
+      # notify user
+      showNotification(ui = paste("Contours chargés. (", (end - start) / 1000, "s)"),
+                       duration = 5,
+                       closeButton = TRUE,
+                       type = c("default"),
+                       session = session)
       
       cat("Loading geojson file done! \n")
       
@@ -94,57 +164,16 @@ polygon_Server <- function(id, r, path) {
       }
       # *******************
       
-      # store
-      r$raw_data_map(geojson)
+      # store geojson & type
+      r$geojson(geojson)
+      geojson_type(names(list_geojson[list_geojson == input$select_geojson]))
+      
       
       # store list dept
-      list_dep(c("Tous", sort(unique(r$raw_data_map()@data$dep))))
+      list_dep(c("Tous", sort(unique(r$geojson()@data$dep))))
       
       
     })
-      
-
-    # -------------------------------------
-    # Observe r$proxymap
-    # -------------------------------------
-    
-    # observeEvent(r$proxymap, {
-    #   
-    #   cat("Proxymap is now available \n")
-    #   
-    #   # -- Load geojson data
-    #   if(!exists("raw_data_map")){
-    #     
-    #     cat("Loading geojson file... \n")
-    #     
-    #     progressSweetAlert(id = "progress", session = session, value = 10, total = 100, display_pct = TRUE, striped = TRUE, 
-    #                        title = "Chargement du contour des communes...")
-    #     
-    #     geojson <- geojson_read(file.path(path$resource, "a-com2022.json"), what = "sp")
-    #     
-    #     updateProgressBar(session, "progress", value = 100, total = 100, title = "Chargement terminé")
-    #     closeSweetAlert(session)
-    #     
-    #     cat("Loading geojson file done! \n")
-    #     
-    #     if(DEBUG){
-    #       raw_data_map <<- geojson
-    #     }
-    #     
-    #     # store
-    #     r$raw_data_map(geojson)
-    #     
-    #   } else {
-    #     
-    #     r$raw_data_map(raw_data_map)
-    #     
-    #   }
-    #   
-    #   # store list dept
-    #   list_dep(c("Tous", unique(r$raw_data_map()@data$dep)))
-    #   
-    #   
-    # })
     
     
     # -------------------------------------
@@ -153,12 +182,9 @@ polygon_Server <- function(id, r, path) {
     
     observeEvent(r$data_map(), {
       
-      cat("Data_map is available \n")
-      
       # setup filters
       cat("Update filters with choices \n")
-      updateSelectizeInput(session, "filter_by_dep", choices = list_dep(), server = TRUE)
-      updateSelectizeInput(session, "filter_by_name", choices = r$filter_by_name(), server = TRUE)
+      updateSelectizeInput(session, "filter_by_name", label = r$filter_by_name_label(), choices = r$filter_by_name(), server = TRUE)
     
     })
 
@@ -168,29 +194,87 @@ polygon_Server <- function(id, r, path) {
     # -------------------------------------
     
     observeEvent(input$submit_filters, {
-      
+
       req(input$filter_by_dep)
-      
+
       cat("New filters submitted : \n")
       cat("- by dep =", input$filter_by_dep, "\n")
-      
+
       if(!"Tous" %in% input$filter_by_dep){
-        
+
         tmp_map <- r$data_map()
         tmp_map <- tmp_map[tmp_map@data$dep %in% input$filter_by_dep, ]
-        
+
         filtered_map(tmp_map)
       } else {
-        
+
         filtered_map(r$data_map())
+
+      }
+
+
+      
+      # create event
+      event <- list(name = input$filter_by_name,
+                    dep = input$filter_by_dep,
+                    color_mode_max = input$color_mode_max,
+                    color_mode_min = input$color_mode_min,
+                    color_opacity = input$select_opacity)
+      
+      # register event to observers
+      if(r$election_type() == "leg")
+        
+        r$leg_apply_filters(event)
+      
+      else {
+        
+        filter_by_name(input$filter_by_name)
+        color_mode_max(input$color_mode_max)
+        color_mode_min(input$color_mode_min)
+        color_opacity(input$select_opacity)}
+
+    })
+    
+    
+    # -------------------------------------
+    # Event observers: display polygons
+    # -------------------------------------
+    
+    observeEvent(r$filtered_dataset(), {
+      
+      cat(module, "New filtered_dataset is available \n")
+      
+      # init values
+      filtered_geojson <- r$geojson()
+      geojson_type <- geojson_type()
+      
+      
+      
+      # *****************************************************************************************
+      #
+      # >> il faut remplacer le select input dep pour avoir les noms affichés, mais les valeurs retournées
+      # >> je crois qu'il faut lui donner une named liste en choice
+      #
+      
+      DEBUG_GEOJSON <<- r$geojson()
+      DEBUG_FILTERED_DATASET <<- r$filtered_dataset()
+      
+      # >> ensuite vérifier si on peut bien filter ci-dessous
+      
+      # *****************************************************************************************
+      
+    
+      
+      # subset by dep
+      if(geojson_type == "Circonscriptions législatives 2012"){
+        
+        filtered_geojson <- filtered_geojson[filtered_geojson@data$dep %in% input$filter_by_dep, ]
         
       }
       
       
-      filter_by_name(input$filter_by_name)
-      color_mode_max(input$color_mode_max)
-      color_mode_min(input$color_mode_min)
-      color_opacity(input$select_opacity)
+      
+      
       
     })
     

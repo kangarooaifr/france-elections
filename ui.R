@@ -10,12 +10,9 @@ library(shinydashboard)
 library(shinyWidgets)
 library(leaflet)
 
-# -- Declare path
-path <- list(project = "./",
-             script = "./src/script",
-             dictionary = "./src/dictionary",
-             resource = "./src/resource",
-             data = "./data")
+# -- init env
+source("environment.R")
+source("config.R")
 
 # -- source scripts
 cat("Source code from:", path$script, " \n")
@@ -30,7 +27,7 @@ rm(nm)
 
 sidebar <- dashboardSidebar(
     sidebarMenu(
-      menuItem("Présidentielles", tabName = "presidentielles", icon = icon("map"), selected = TRUE)),
+      menuItem("Résultats", tabName = "resultats", icon = icon("map"), selected = TRUE)),
     collapsed = TRUE)
 
 
@@ -41,30 +38,37 @@ body <- dashboardBody(
     tags$head(includeHTML(("./src/google/google-analytics.html"))),
     
     tabItems(
-    
-        # -- Presidentielles
-        tabItem(tabName = "presidentielles",
-                
-                fluidRow(
+      
+      # -- Presidentielles
+      tabItem(tabName = "resultats",
+              
+              fluidRow(
+              
+                  column(width = 2,
+                         #select_dataset_UI("data"),
+                         
+                         tabsetPanel(
+                           tabPanel("Présidentielles", select_dataset_UI("data")),
+                           tabPanel("Législatives", select_dataset_UI("legislatives"))),
+                         
+                         geojson_UI("polygon"),
+                         paypal_btn()),
                   
-                    column(width = 2,
-                           select_dataset_UI("data"),
-                           geojson_UI("polygon"),
-                           paypal_btn()),
-                    
-                    column(width = 8,
-                           map_UI("map"),br(),
-                           p("© 2022 Philippe PERET / KANGAROO.AI | Version 1.3 | ",
+                  column(width = 8,
+                         map_UI("map"),br(),
+                         p("© 2022 Philippe PERET / KANGAROO.AI | Version 1.3 | ",
                            a("LinkedIn", href="https://www.linkedin.com/in/philippeperet/"), "|",
                            a("Source", href="https://www.data.gouv.fr/fr/pages/donnees-des-elections/"))),
-                    
-                    column(width = 2,
-                           filters_UI("polygon"),
-                           hide_show_UI("polygon"),
-                           map_search_Input("map"))))
-    
-    
-    )
+                  
+                  column(width = 2,
+                         filters_UI("polygon"),
+                         hide_show_UI("polygon"),
+                         map_search_Input("map"),
+                         warning_dataset_UI("polygon"),
+                         warning_geojson_UI("polygon"))))
+              
+              
+      )
 )
 
 

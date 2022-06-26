@@ -11,17 +11,13 @@ library(dplyr)
 library(stringr)
 library(geojsonio)
 
-# -- Declare path
 
-path <- list(project = "./",
-             script = "./src/script",
-             dictionary = "./src/dictionary",
-             resource = "./src/resource",
-             data = "./data")
+# -- init env
+source("environment.R")
+source("config.R")
 
 
 # -- Source scripts
-
 cat("Source code from:", path$script, " \n")
 for (nm in list.files(path$script, full.names = TRUE, recursive = TRUE, include.dirs = FALSE))
 {
@@ -73,6 +69,12 @@ shinyServer(
     
     # polygon city-level
     polygon_Server(id = "polygon", r = r, path = path)
+    
+    # xxx
+    legislatives_Server(id = "legislatives", r = r, path = path)
+    
+    # analytics
+    #analytics_Server(id = "analytics", r = r, path = path)
     
   }
 )
