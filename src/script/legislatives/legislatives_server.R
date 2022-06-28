@@ -84,46 +84,19 @@ legislatives_Server <- function(id, r, path) {
     
     observeEvent(input$load_dataset, {
       
-      cat("Load dataset \n")
-      cat("- election_year =", input$election_year, "\n")
-      cat("- election_turn =", input$election_turn, "\n")
+      cat(module, "load_dataset btn hit \n")
       
       # get target file based on inputs
       target_file <- available_datasets[available_datasets$annee == input$election_year & 
                                         available_datasets$tour == input$election_turn, ]$file.name
 
-      # build target file
-      target_file <- file.path(path$data_prepared, target_file)
-      cat("Target_file :", target_file, "\n")
-      
-      # monitoring
-      start <- getTimestamp()
-      
-      # read file
-      #dataset <- read.csv(target_file, header = TRUE, sep = ";", dec = ",", colClasses = colClasses, fileEncoding = "latin1")
-      withProgress(message = 'Chargement...', value = 0.25, {
-        dataset <- read.csv(target_file, header = TRUE, sep = ";", dec = ",", fileEncoding = "UTF-8", encoding = "Latin1")})
-      
-      # monitoring
-      end <- getTimestamp()
-      
-      # notify user
-      showNotification(ui = paste("Résultats chargés. (", (end - start) / 1000, "s)"),
-                       duration = 5,
-                       closeButton = TRUE,
-                       type = c("default"),
-                       session = session)
-      
-      
-      
+      # load
+      dataset <- load_prepared_data(target_file, colClasses = COL_CLASSES_PREPARED_LEGISLATIVES, session = session)
+
       # register filters
       r$filter_by_name(sort(unique(dataset$Nuance)))
       r$filter_by_name_label("Nuance politique")
       r$election_type("leg")
-      
-      # debug
-      if(DEBUG)
-        DEBUG_leg_dataset <<- dataset
       
       # store
       r$dataset(dataset)
