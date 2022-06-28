@@ -3,45 +3,56 @@ library(dplyr)
 
 
 
-aggregate_by_codgeo <- function(geo_type, data){
+aggregate_by_codgeo <- function(geo_type, data, election_type){
   
   cat("Aggregate data by codgeo \n")
   
   # check geo_type
   if(geo_type == "Circonscriptions législatives 2012"){
    
-    # define columns to sum
-    cols_to_sum <- c("Inscrits", 
-                     "Abstentions", 
-                     "Votants", 
-                     "Blancs", 
-                     "Nuls", 
-                     "Exprimés", 
-                     "Voix")
-    # aggregate
-    res_sum <- aggregate(data[cols_to_sum], by = list("codgeo.circonscription" = data$codgeo.circonscription), FUN = sum)
+    cat("-- codgeo.circonscription \n")
     
-    # define columns to unique
-    cols_unique <- c("Code.du.département", 
-                     "Libellé.du.département", 
-                     "Code.de.la.circonscription", 
-                     "Libellé.de.la.circonscription",
-                     "N.Panneau",
-                     "Sexe",
-                     "Nom",
-                     "Prénom",
-                     "Nuance")
+    # check election_type
+    if(election_type == "leg")
+      cols_unique <- COLS_UNIQUE_CIRCO_LEG
+    else
+      cols_unique <- COLS_UNIQUE_CIRCO_PDT
     
-    # aggregate
+    # aggregate (sum)
+    res_sum <- aggregate(data[COLS_TO_SUM], by = list("codgeo.circonscription" = data$codgeo.circonscription), FUN = sum)
+    
+    # aggregate (unique val)
     res_unique <- aggregate(data[cols_unique], by = list("codgeo.circonscription" = data$codgeo.circonscription), FUN = unique)
     res_unique$codgeo.circonscription <- NULL
   
     # bind results
     output <- cbind(res_unique, res_sum)
     
+  } else {
+    
+    cat("-- codgeo.commune \n")
+    
+    # check election_type
+    if(election_type == "leg")
+      cols_unique <- COLS_UNIQUE_COMMUNE_LEG
+    else
+      cols_unique <- COLS_UNIQUE_COMMUNE_PDT
+    
+    # aggregate
+    res_sum <- aggregate(data[COLS_TO_SUM], by = list("codgeo.commune" = data$codgeo.commune), FUN = sum)
+    
+    # aggregate (unique val)
+    res_unique <- aggregate(data[cols_unique], by = list("codgeo.commune" = data$codgeo.commune), FUN = unique)
+    res_unique$codgeo.commune <- NULL
+    
+    # bind results
+    output <- cbind(res_unique, res_sum)
+    
   }
   
-  # codgeo.commune
+  # debug
+  if(DEBUG)
+    DEBUT_AGGREGATE_CODGEO <<- output
   
   cat("-- output dim =", dim(output), "\n")
   
