@@ -48,7 +48,7 @@ body <- dashboardBody(
                          #select_dataset_UI("data"),
                          
                          tabsetPanel(
-                           tabPanel("Présidentielles", select_dataset_UI("data")),
+                           tabPanel("Présidentielles", select_dataset_UI("presidentielles")),
                            tabPanel("Législatives", select_dataset_UI("legislatives"))),
                          
                          geojson_UI("polygon"),

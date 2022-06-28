@@ -51,6 +51,10 @@ shinyServer(
     # declare r communication object
     r <- reactiveValues()
     
+    # loaded dataset (exposed to check if filters can be displayed)
+    r$dataset <- reactiveVal(NULL)
+    
+    
     # ----------------------------------------------------------------------
     # - dataset: from data module, contains the data by candidate / polygon
     
@@ -62,7 +66,7 @@ shinyServer(
     
     
     # data
-    data_Server(id = "data", r = r, path = path)
+    #data_Server(id = "data", r = r, path = path)
     
     # map
     map_Server(id = "map", r = r, path = path)
@@ -70,7 +74,8 @@ shinyServer(
     # polygon city-level
     polygon_Server(id = "polygon", r = r, path = path)
     
-    # xxx
+    # election servers
+    presidentielles_Server(id = "presidentielles", r = r, path = path)
     legislatives_Server(id = "legislatives", r = r, path = path)
     
     # analytics
