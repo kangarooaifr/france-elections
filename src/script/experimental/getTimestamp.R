@@ -8,14 +8,15 @@
 #' @examples getTimestamp()
 
 
-getTimestamp <- function()
+getTimestamp <- function(verbose = FALSE)
 {
   
   # init timestamp
   timestamp <- round(as.numeric(Sys.time())*1000, digits = 0)
   
   # trace
-  cat("timestamp = ", as.character(timestamp), "\n")
+  if(verbose)
+    cat("timestamp = ", as.character(timestamp), "\n")
   
   # return
   timestamp
