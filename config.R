@@ -9,8 +9,14 @@
 #                  "Nuls", 
 #                  "Exprimés")
 
+# aggregate by geocode
 COLS_TO_SUM <- load_resource(path$resource, "cols_to_sum.csv", header = FALSE, format = "vector", encoding = "UTF-8")
 
+COLS_UNIQUE_CIRCO_LEG <- load_resource(path$resource, "cols_unique_circo_leg.csv", header = FALSE, format = "vector", encoding = "UTF-8")
+COLS_UNIQUE_CIRCO_PDT <- load_resource(path$resource, "cols_unique_circo_pdt.csv", header = FALSE, format = "vector", encoding = "UTF-8")
+
+COLS_UNIQUE_COMMUNE_LEG <- load_resource(path$resource, "cols_unique_commune_leg.csv", header = FALSE, format = "vector", encoding = "UTF-8")
+COLS_UNIQUE_COMMUNE_PDT <- load_resource(path$resource, "cols_unique_commune_pdt.csv", header = FALSE, format = "vector", encoding = "UTF-8")
 
 
 # COL_CLASSES_BEFORE_CANDIDATES <- c("Code.du.département" = "character",
@@ -88,6 +94,9 @@ COL_CLASSES_CANDIDATES_PRESIDENTIELLE <- load_resource(path$resource, "col_class
 COL_CLASSES_CANDIDATES_LEGISLATIVES <- load_resource(path$resource, "col_classes_candidates_legislatives.csv", header = FALSE, format = "named_vector", encoding = "UTF-8")
 
 
+COL_CLASSES_PREPARED_LEGISLATIVES <- load_resource(path$resource, "col_classes_prepared_legislatives.csv", header = FALSE, format = "named_vector", encoding = "UTF-8")
+COL_CLASSES_PREPARED_PRESIDENTIELLE <- load_resource(path$resource, "col_classes_prepared_presidentielle.csv", header = FALSE, format = "named_vector", encoding = "UTF-8")
+
 
 
 # LEG_COLS_TO_DROP <- c("X..Abs.Ins",
@@ -102,7 +111,7 @@ COL_CLASSES_CANDIDATES_LEGISLATIVES <- load_resource(path$resource, "col_classes
 #                       "X..Voix.Exp")
 
 
-LEG_COLS_TO_DROP <- load_resource(path$resource, "leg_cols_to_drop.csv", header = FALSE, format = "vector", encoding = "UTF-8")
+RAW_COLS_TO_DROP <- load_resource(path$resource, "raw_cols_to_drop.csv", header = FALSE, format = "vector", encoding = "UTF-8")
 
 # -- add
 # COLS_TO_ADD <- c("Code.de.la.circonscription",
