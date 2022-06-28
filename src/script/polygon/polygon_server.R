@@ -16,10 +16,8 @@ polygon_Server <- function(id, r, path) {
   moduleServer(id, function(input, output, session) {
     
     # -------------------------------------
-    # Init
+    # Config
     # -------------------------------------
-    
-    cat("-- [cities] Starting module server... \n")
     
     # get namespace
     ns <- session$ns
@@ -47,7 +45,18 @@ polygon_Server <- function(id, r, path) {
     # to store whether commune / circo are loaded
     geojson_type <- reactiveVal(NULL)
     
+    # to store the geojson for display (subset + added @data)
+    geojson_to_display <- reactiveVal(NULL)
     
+    # to store labels for display
+    labels_to_display <- reactiveVal(NULL)
+    
+    # to store the current filters
+    cache_filter_values <- reactiveVal(NULL)
+    cache_color_opacity <- reactiveVal(NULL)
+    
+    # to store color palette function
+    cache_color_palette <- reactiveVal(NULL)
     
     filter_by_dep <- reactiveVal(NULL)
     filter_by_name <- reactiveVal(NULL)
@@ -66,7 +75,21 @@ polygon_Server <- function(id, r, path) {
     
     # loaded geojson
     is_loaded_geojson <- reactiveVal(rep(FALSE, length(list_geojson)))
+    
+    
+    # -------------------------------------
+    # Init
+    # -------------------------------------
+    
+    cat("-- [polygons] Starting module server... \n")
 
+    # compute named list of dep for selectInput
+    list_choices_dep <- as.character(LISTE_DEP$Code.du.département)
+    names(list_choices_dep) <- LISTE_DEP$Libellé.du.département
+    
+    # add option to select all dep
+    list_choices_dep <- append(list("Tous" = "tous"), list_choices_dep)
+    
     
     # -------------------------------------
     # Outputs
@@ -91,7 +114,7 @@ polygon_Server <- function(id, r, path) {
       
       # whether or not a geojson is loaded 
       if(is.null(r$geojson()))
-        box(title = "Message", width = 12, solidHeader = TRUE, status = "danger",
+        box(title = "Message", width = 12, solidHeader = TRUE, status = "warning",
             "Chargez un fichier de contours")
       
     })
@@ -105,7 +128,7 @@ polygon_Server <- function(id, r, path) {
             
             # init (empty choices)
             selectizeInput(ns("filter_by_name"), label = "Candidat", choices = NULL),
-            selectizeInput(ns("filter_by_dep"), label = "Départements", choices = LISTE_DES_DEPARTEMENTS, multiple = TRUE),
+            selectizeInput(ns("filter_by_dep"), label = "Départements", choices = list_choices_dep, multiple = TRUE),
             
             # color palette
             checkboxInput(ns("color_mode_min"), label = "Couleurs : activer % min", value = TRUE, width = NULL),
@@ -188,11 +211,20 @@ polygon_Server <- function(id, r, path) {
     
     })
 
-    
+    # update filter by name
+    observeEvent(r$filter_by_name(), {
+      
+      # setup filters
+      cat(module, "Update filter_by_name (label & choices) \n")
+      updateSelectizeInput(session, "filter_by_name", label = r$filter_by_name_label(), choices = r$filter_by_name(), server = TRUE)
+      
+    })
+   
+
     # -------------------------------------
     # Observe filters
     # -------------------------------------
-    
+     
     observeEvent(input$submit_filters, {
 
       req(input$filter_by_dep)
@@ -212,71 +244,140 @@ polygon_Server <- function(id, r, path) {
 
       }
 
-
+      # *************** CHECK IF ABOVE STILL NEEDED ******************
       
-      # create event
-      event <- list(name = input$filter_by_name,
-                    dep = input$filter_by_dep,
-                    color_mode_max = input$color_mode_max,
-                    color_mode_min = input$color_mode_min,
-                    color_opacity = input$select_opacity)
+      # get values
+      filter_values <- list(name = input$filter_by_name,
+                            dep = input$filter_by_dep)
       
-      # register event to observers
-      if(r$election_type() == "leg")
+      # check if filters have been modified! (to avoid extra computation)
+      is_same_filter <- compare_filters(new = filter_values, old = cache_filter_values())
+      
+      # register filters to observers
+      if(!is_same_filter){
         
-        r$leg_apply_filters(event)
-      
-      else {
+        # store new values
+        cache_filter_values(filter_values)
         
-        filter_by_name(input$filter_by_name)
-        color_mode_max(input$color_mode_max)
-        color_mode_min(input$color_mode_min)
-        color_opacity(input$select_opacity)}
-
+        # check election type
+        if(r$election_type() == "leg")
+          
+          r$leg_apply_filters(filter_values)
+        
+        else {
+          
+          # *** TODO: check this for presidential
+          filter_by_name(input$filter_by_name)
+          color_mode_max(input$color_mode_max)
+          color_mode_min(input$color_mode_min)
+          color_opacity(input$select_opacity)}}
+      
     })
     
     
     # -------------------------------------
-    # Event observers: display polygons
+    # Observe: filtered dataset
     # -------------------------------------
     
     observeEvent(r$filtered_dataset(), {
       
       cat(module, "New filtered_dataset is available \n")
       
-      # init values
-      filtered_geojson <- r$geojson()
-      geojson_type <- geojson_type()
+      # -- init values
+      geo_type <- geojson_type()
+      geojson <- r$geojson()
+      data <- r$filtered_dataset()
       
+      # -- aggregate data by geocode
+      data <- aggregate_by_codgeo(geo_type, data)
       
+      # -- subset geojson
+      geojson <- subset_geojson(geo_type = geo_type, geojson = geojson, data = data)
       
-      # *****************************************************************************************
-      #
-      # >> il faut remplacer le select input dep pour avoir les noms affichés, mais les valeurs retournées
-      # >> je crois qu'il faut lui donner une named liste en choice
-      #
+      # -- feed geojson with filtered data
+      geojson <- add_data_to_geojson(geojson = geojson, data = data)
       
-      DEBUG_GEOJSON <<- r$geojson()
-      DEBUG_FILTERED_DATASET <<- r$filtered_dataset()
+      # -- build labels
+      labels <- build_labels(geojson = geojson)
       
-      # >> ensuite vérifier si on peut bien filter ci-dessous
-      
-      # *****************************************************************************************
-      
-    
-      
-      # subset by dep
-      if(geojson_type == "Circonscriptions législatives 2012"){
-        
-        filtered_geojson <- filtered_geojson[filtered_geojson@data$dep %in% input$filter_by_dep, ]
-        
-      }
-      
-      
-      
-      
+      # -- store geojson & labels
+      geojson_to_display(geojson)
+      labels_to_display(labels)
       
     })
+    
+    
+    # -------------------------------------
+    # Observer: manage color palette
+    # -------------------------------------
+    
+    # when geojson with data is updated
+    observeEvent(geojson_to_display(), {
+      
+      # get value
+      geojson <- geojson_to_display()
+      
+      # get color palette
+      color_pal <- make_color_palette(geojson, input$color_mode_min, input$color_mode_max)
+      
+      # cache values
+      cache_color_palette(color_pal)
+      
+    })
+    
+    # when color options are updated
+    observeEvent({
+      input$color_mode_min
+      input$color_mode_max}, {
+        
+        # make sure geojson is available
+        req(geojson_to_display())
+        
+        # get value
+        geojson <- geojson_to_display()
+        
+        # get color palette
+        color_pal <- make_color_palette(geojson, input$color_mode_min, input$color_mode_max)
+        
+        # cache values
+        cache_color_palette(color_pal)
+        
+      })
+    
+    
+    # -------------------------------------
+    # Observer: call for display
+    # -------------------------------------
+    
+    observeEvent({
+      geojson_to_display()
+      cache_color_palette()
+      input$select_opacity}, {
+        
+        # required!
+        req(geojson_to_display())
+        
+        cat(module, "Updating polygons on map \n")
+        
+        # -- init values
+        geojson <- geojson_to_display()
+        labels <- labels_to_display()
+        color_pal <- cache_color_palette()
+        
+        # -- update display on map
+        r$proxymap %>%
+          clearGroup("polygons") %>%
+          addPolygons(data = geojson, 
+                      weight = 1, 
+                      color = color_pal(geojson@data$Voix / geojson@data$Exprimés * 100),
+                      fillColor = color_pal(geojson@data$Voix / geojson@data$Exprimés * 100), 
+                      fillOpacity = input$select_opacity / 100,
+                      group = "polygons", 
+                      label = labels,
+                      labelOptions = labelOptions(style = list(
+                        "font-size" = "12px")))
+        
+      }, ignoreInit = TRUE)
     
     
     # -------------------------------------
@@ -347,13 +448,13 @@ polygon_Server <- function(id, r, path) {
       cat("Add / Update polygons \n")
       updateProgressBar(session, "progress", value = 50, total = 100, title = "Affichage des contours...")
       r$proxymap %>%
-        clearGroup("cities") %>%
+        clearGroup("polygons") %>%
         addPolygons(data = filtered_map, 
                     weight = 1, 
                     color = ~pal(filtered_map[[col_name]] / filtered_map@data$Exprimés * 100),
                     fillColor = ~pal(filtered_map[[col_name]] / filtered_map@data$Exprimés * 100), 
                     fillOpacity = input$select_opacity / 100,
-                    group = "cities", 
+                    group = "polygons", 
                     label = labels,
                     labelOptions = labelOptions(style = list(
                                                   "font-size" = "12px")))
@@ -373,23 +474,23 @@ polygon_Server <- function(id, r, path) {
       # checkbox marked
       if(input$submit_hide_show){
 
-        cat("Show group: cities \n")
+        cat("Show group: polygons \n")
 
         # proxy map
         r$proxymap %>%
 
           # Show group
-          showGroup('cities')
+          showGroup('polygons')
 
       }else{
 
-        cat("Hide group: cities \n")
+        cat("Hide group: polygons \n")
 
         # proxy map
         r$proxymap %>%
 
           # clear group
-          hideGroup('cities')
+          hideGroup('polygons')
       }
 
     }, ignoreInit = TRUE)
