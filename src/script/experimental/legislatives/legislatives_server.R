@@ -105,7 +105,7 @@ legislatives_Server <- function(id, r, path) {
       # read file
       #dataset <- read.csv(target_file, header = TRUE, sep = ";", dec = ",", colClasses = colClasses, fileEncoding = "latin1")
       withProgress(message = 'Chargement...', value = 0.25, {
-        dataset <- read.csv(target_file, header = TRUE, sep = ";", dec = ",", fileEncoding = "latin1")})
+        dataset <- read.csv(target_file, header = TRUE, sep = ";", dec = ",", fileEncoding = "UTF-8", encoding = "Latin1")})
       
       # monitoring
       end <- getTimestamp()
@@ -143,23 +143,17 @@ legislatives_Server <- function(id, r, path) {
       # log
       cat(module, "Call to apply filters \n")
       
-      # get event
-      event <- r$leg_apply_filters()
+      # apply
+      subset <- leg_apply_filters(x = r$dataset(), filter = r$leg_apply_filters(), module = module)
       
-      # init dataset
-      subset <- r$dataset()
-      
-      # subset by dep
-      subset <- subset[subset$Libellé.du.département %in% event$dep, ]
-      
-      # subset by nuance
-      subset <- subset[subset$Nuance %in% event$name, ]
-      
-      # check size
+      # check size and store
       cat(module, "Check output size =", dim(subset), "\n")
-      
-      # store
-      r$filtered_dataset(subset)
+      if(dim(subset)[1] == 0)
+        showNotification(ui = "Résultat vide, veuillez modifier les filtres.",
+                         type = "error",
+                         session = session)
+      else
+        r$filtered_dataset(subset)
       
     })
     

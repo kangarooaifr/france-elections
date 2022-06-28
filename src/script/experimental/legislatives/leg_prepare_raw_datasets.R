@@ -47,6 +47,8 @@ leg_prepare_raw_datasets <- function(new_datasets, session){
     # -- load file
     dataset <- load_with_ukn_cols(file.path(path$data_raw, file))
     
+    if(DEBUG)
+      DEBUG_RAW_DATASET <<- dataset
     
     # -- update progress
     updateProgressBar(session = session,
