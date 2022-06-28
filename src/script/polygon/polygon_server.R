@@ -127,7 +127,7 @@ polygon_Server <- function(id, r, path) {
         wellPanel(
             
             # init (empty choices)
-            selectizeInput(ns("filter_by_name"), label = "Candidat", choices = NULL),
+            selectizeInput(ns("filter_by_name"), label = r$filter_by_name_label(), choices = r$filter_by_name()),
             selectizeInput(ns("filter_by_dep"), label = "Départements", choices = list_choices_dep, multiple = TRUE),
             
             # color palette
@@ -176,10 +176,11 @@ polygon_Server <- function(id, r, path) {
       
       cat("Loading geojson file done! \n")
       
-      # ******************* Hack for circo...
       
+      # ******************* Hack for circo...
       if(dim(geojson@data)[1] == 566){
         
+        cat(module, "WARNING: Fixing circo geojson !!! \n")
         geojson@data$codgeo <- geojson@data$ID
         geojson@data$libgeo <- paste(geojson@data$nom_dpt, "Circonscription n°", geojson@data$num_circ)
         geojson@data$dep <- geojson@data$code_dpt
@@ -187,14 +188,16 @@ polygon_Server <- function(id, r, path) {
       }
       # *******************
       
+      
+      if(DEBUG)
+        DEBUG_RAW_GEOJSON <<- geojson
+      
       # store geojson & type
       r$geojson(geojson)
       geojson_type(names(list_geojson[list_geojson == input$select_geojson]))
       
-      
       # store list dept
-      list_dep(c("Tous", sort(unique(r$geojson()@data$dep))))
-      
+      #list_dep(c("Tous", sort(unique(r$geojson()@data$dep))))
       
     })
     
@@ -203,22 +206,28 @@ polygon_Server <- function(id, r, path) {
     # Observe r$data_map()
     # -------------------------------------
     
-    observeEvent(r$data_map(), {
-      
-      # setup filters
-      cat("Update filters with choices \n")
-      updateSelectizeInput(session, "filter_by_name", label = r$filter_by_name_label(), choices = r$filter_by_name(), server = TRUE)
-    
-    })
+    # observeEvent(r$data_map(), {
+    #   
+    #   # setup filters
+    #   cat("Update filters with choices \n")
+    #   updateSelectizeInput(session, "filter_by_name", label = r$filter_by_name_label(), choices = r$filter_by_name(), server = TRUE)
+    # 
+    # })
 
     # update filter by name
-    observeEvent(r$filter_by_name(), {
-      
-      # setup filters
-      cat(module, "Update filter_by_name (label & choices) \n")
-      updateSelectizeInput(session, "filter_by_name", label = r$filter_by_name_label(), choices = r$filter_by_name(), server = TRUE)
-      
-    })
+    # observeEvent(r$filter_by_name(), {
+    #   
+    #   # get values
+    #   label <- r$filter_by_name_label()
+    #   choices <- r$filter_by_name()
+    #   
+    #   # setup filters
+    #   cat(module, "Update filter_by_name (label & choices) \n")
+    #   cat("-- label =", label, "\n")
+    #   cat("-- choices =", choices, "\n")
+    #   updateSelectizeInput(session, "filter_by_name", label = label, choices = choices, server = TRUE)
+    #   
+    # })
    
 
     # -------------------------------------
@@ -229,20 +238,17 @@ polygon_Server <- function(id, r, path) {
 
       req(input$filter_by_dep)
 
-      cat("New filters submitted : \n")
-      cat("- by dep =", input$filter_by_dep, "\n")
-
-      if(!"Tous" %in% input$filter_by_dep){
-
-        tmp_map <- r$data_map()
-        tmp_map <- tmp_map[tmp_map@data$dep %in% input$filter_by_dep, ]
-
-        filtered_map(tmp_map)
-      } else {
-
-        filtered_map(r$data_map())
-
-      }
+      # if(!"Tous" %in% input$filter_by_dep){
+      # 
+      #   tmp_map <- r$data_map()
+      #   tmp_map <- tmp_map[tmp_map@data$dep %in% input$filter_by_dep, ]
+      # 
+      #   filtered_map(tmp_map)
+      # } else {
+      # 
+      #   filtered_map(r$data_map())
+      # 
+      # }
 
       # *************** CHECK IF ABOVE STILL NEEDED ******************
       
@@ -256,6 +262,9 @@ polygon_Server <- function(id, r, path) {
       # register filters to observers
       if(!is_same_filter){
         
+        cat(module, "New filters submitted : \n")
+        cat("-- by dep =", input$filter_by_dep, "\n")
+        
         # store new values
         cache_filter_values(filter_values)
         
@@ -266,11 +275,15 @@ polygon_Server <- function(id, r, path) {
         
         else {
           
+          r$pdt_apply_filters(filter_values)
+          
           # *** TODO: check this for presidential
-          filter_by_name(input$filter_by_name)
-          color_mode_max(input$color_mode_max)
-          color_mode_min(input$color_mode_min)
-          color_opacity(input$select_opacity)}}
+          # filter_by_name(input$filter_by_name)
+          # color_mode_max(input$color_mode_max)
+          # color_mode_min(input$color_mode_min)
+          # color_opacity(input$select_opacity)
+          
+          }}
       
     })
     
@@ -287,9 +300,10 @@ polygon_Server <- function(id, r, path) {
       geo_type <- geojson_type()
       geojson <- r$geojson()
       data <- r$filtered_dataset()
+      election_type <- r$election_type()
       
       # -- aggregate data by geocode
-      data <- aggregate_by_codgeo(geo_type, data)
+      data <- aggregate_by_codgeo(geo_type, data, election_type = election_type)
       
       # -- subset geojson
       geojson <- subset_geojson(geo_type = geo_type, geojson = geojson, data = data)
