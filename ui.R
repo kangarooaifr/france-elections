@@ -12,7 +12,6 @@ library(leaflet)
 
 # -- init env
 source("environment.R")
-source("config.R")
 
 # -- source scripts
 cat("Source code from:", path$script, " \n")
@@ -22,6 +21,7 @@ for (nm in list.files(path$script, full.names = TRUE, recursive = TRUE, include.
 }
 rm(nm)
 
+source("config.R")
 
 # -- Define Sidebar UI
 
@@ -35,7 +35,7 @@ sidebar <- dashboardSidebar(
 
 body <- dashboardBody(
   
-    tags$head(includeHTML(("./src/google/google-analytics.html"))),
+    #tags$head(includeHTML(("./src/google/google-analytics.html"))),
     
     tabItems(
       
