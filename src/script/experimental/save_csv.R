@@ -19,7 +19,7 @@ save_csv <- function(path = path$data_prepared, file = file, data = dataset){
             file = file.path(path, file),
             quote = FALSE,
             row.names = FALSE,
-            fileEncoding = "")
+            fileEncoding = "UTF-8")
   
   cat("File ", file, "saved. \n")
   
