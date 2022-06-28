@@ -17,22 +17,17 @@ legislatives_Server <- function(id, r, path) {
     # -------------------------------------
     # Config
     # -------------------------------------
-    
-    cat("-- [Legislatives] Starting module server... \n")
-    
+
     # get namespace
     ns <- session$ns
     
     # config
     module <- paste0("[", id, "]")
     pattern <- "Legislatives"
-    
+
     # -------------------------------------
     # communication objects
     # -------------------------------------
-    
-    # loaded dataset (exposed to check if filters can be displayed)
-    r$dataset <- reactiveVal(NULL)
     
     # observers: feed this to call for apply filters
     r$leg_apply_filters <- reactiveVal(NULL)
@@ -42,11 +37,13 @@ legislatives_Server <- function(id, r, path) {
     # Init
     # -------------------------------------
     
+    cat(module, "-- Starting module server... \n")
+    
     # -- check for new dataset
     new_datasets <- check_new_files(pattern = pattern)
     
     if(!is.null(new_datasets))
-      leg_prepare_raw_datasets(new_datasets, session)
+      prepare_raw_datasets(new_datasets = new_datasets, pattern = pattern, notify = TRUE, session = session)
     
     
     # -- get available datasets
@@ -156,46 +153,6 @@ legislatives_Server <- function(id, r, path) {
         r$filtered_dataset(subset)
       
     })
-    
-    
-    
-    # observeEvent({r$raw_data_map()
-    #              r$dataset()}, {
-    #   
-    #   req(!is.null(r$raw_data_map()))
-    #                
-    #   cat("New dataset available, size", dim(r$dataset()), "\n")
-    #   
-    #   # init
-    #   data_map <- r$raw_data_map()
-    #   dataset <- r$dataset()
-    #   
-    #   
-    #   # ************ Feat Engineering
-    #   dataset <- if(dim(data_map@data)[1] == 566)
-    #     feat_engineering_circo(dataset, COLS_TO_SUM, r$list_candidates())
-    #   else
-    #     feat_engineering(dataset, COLS_TO_SUM, r$list_candidates())
-    #   
-    #   if(DEBUG)
-    #     feat_dataset <<- dataset
-    #   
-    #   # ************ Feat Engineering
-    #   
-    #   
-    #   # add candidates (match by codgeo)
-    #   cat("Matching codgeo with candidate votes... \n")
-    #   
-    #   cols <- colnames(dataset)
-    #   new_cols <- cols[!cols %in% "codgeo"]
-    #   
-    #   data_map@data[new_cols] <- dataset[match(data_map@data$codgeo, dataset$codgeo), new_cols]
-    #   
-    #   # store
-    #   r$data_map(data_map)
-    #   
-    # }, ignoreNULL = TRUE, ignoreInit = TRUE)
-    
     
   })
 }
