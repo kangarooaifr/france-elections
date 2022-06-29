@@ -56,7 +56,7 @@ body <- dashboardBody(
                   
                   column(width = 8,
                          map_UI("map"),br(),
-                         p("© 2022 Philippe PERET / KANGAROO.AI | Version 1.3 | ",
+                         p("© 2022 Philippe PERET / KANGAROO.AI | Version 2.0.1 | ",
                            a("LinkedIn", href="https://www.linkedin.com/in/philippeperet/"), "|",
                            a("Source", href="https://www.data.gouv.fr/fr/pages/donnees-des-elections/"))),
                   
