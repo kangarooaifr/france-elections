@@ -35,7 +35,7 @@ sidebar <- dashboardSidebar(
 
 body <- dashboardBody(
   
-    #tags$head(includeHTML(("./src/google/google-analytics.html"))),
+    tags$head(includeHTML(("./src/google/google-analytics.html"))),
     
     tabItems(
       
@@ -65,7 +65,8 @@ body <- dashboardBody(
                          hide_show_UI("polygon"),
                          map_search_Input("map"),
                          warning_dataset_UI("polygon"),
-                         warning_geojson_UI("polygon"))))
+                         warning_geojson_UI("polygon"),
+                         warning_perfo_UI("polygon"))))
               
               
       )

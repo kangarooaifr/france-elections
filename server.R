@@ -29,24 +29,32 @@ rm(nm)
 # Define server logic
 
 shinyServer(
-  function(input, output){
+  function(input, output, session){
     
     # *******************************************************************************************************
     # DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG
     # *******************************************************************************************************
     
-    DEBUG <<- TRUE
+    DEBUG <<- FALSE
     
-    if(DEBUG){
-      
-      source(file.path(path$script, "map/map_server.R"))
-      source(file.path(path$script, "polygon/polygon_server.R"), encoding = 'UTF-8')
-      
-    }
+    # if(DEBUG){
+    #   
+    #   source(file.path(path$script, "map/map_server.R"))
+    #   source(file.path(path$script, "polygon/polygon_server.R"), encoding = 'UTF-8')
+    #   
+    # }
     
     # *******************************************************************************************************
     # DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG
     # *******************************************************************************************************
+    
+    # analytics
+    log_event(session_id = session$token, event = "main_server_start", timestamp = getTimestamp())
+    
+    
+    # -------------------------------------
+    # Communication objects
+    # -------------------------------------
     
     # declare r communication object
     r <- reactiveValues()
@@ -79,7 +87,7 @@ shinyServer(
     legislatives_Server(id = "legislatives", r = r, path = path)
     
     # analytics
-    #analytics_Server(id = "analytics", r = r, path = path)
+    analytics_Server(id = "analytics", r = r, path = path)
     
   }
 )
