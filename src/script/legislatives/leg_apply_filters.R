@@ -14,7 +14,7 @@
 leg_apply_filters <- function(x, filter, module){
   
   # subset by dep
-  if(filter$dep != "tous"){
+  if(!"tous" %in% filter$dep){
     
     cat(module, "Filter by dep, input =", filter$dep, "\n")
     x <- x[x$Code.du.département %in% filter$dep, ]
