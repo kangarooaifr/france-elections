@@ -95,11 +95,31 @@ polygon_Server <- function(id, r, path) {
     # Outputs
     # -------------------------------------
     
-    # select geojson
-    output$select_geojson <- renderUI(selectizeInput(ns("select_geojson"), label = "Contours", choices = list_geojson))
     
-    # show hide action button
-    output$action_geojson <- renderUI(actionButton(ns("load_geojson"), label = "Charger"))
+    # geojson (replace next blocs)
+    output$geojson <- renderUI({
+      
+      # -- check if dataset loaded
+      if(!is.null(r$dataset())){
+        
+        wellPanel(
+          selectizeInput(ns("select_geojson"), label = "Contours", choices = list_geojson),
+          actionButton(ns("load_geojson"), label = "Charger"))
+        
+      } else
+        NULL
+      
+    })
+    
+    # # select geojson
+    # output$select_geojson <- renderUI(
+    #   if(!is.null(r$dataset()))
+    #     selectizeInput(ns("select_geojson"), label = "Contours", choices = list_geojson)
+    #   else
+    #     NULL)
+    # 
+    # # show hide action button
+    # output$action_geojson <- renderUI(actionButton(ns("load_geojson"), label = "Charger"))
     
     # warning - dataset
     output$warning_dataset <- renderUI({
@@ -112,10 +132,13 @@ polygon_Server <- function(id, r, path) {
     # warning - geojson
     output$warning_geojson <- renderUI({
       
-      # whether or not a geojson is loaded 
-      if(is.null(r$geojson()))
-        box(title = "Message", width = 12, solidHeader = TRUE, status = "warning",
-            "Chargez un fichier de contours")
+      # whether or not a dataset is loaded 
+      if(!is.null(r$dataset()))
+      
+        # whether or not a geojson is loaded 
+        if(is.null(r$geojson()))
+          box(title = "Message", width = 12, solidHeader = TRUE, status = "warning",
+              "Chargez un fichier de contours")
       
     })
     
@@ -146,6 +169,19 @@ polygon_Server <- function(id, r, path) {
             
             actionButton(ns("submit_filters"), label = "Afficher"))}
     })
+    
+    
+    
+    output$hide_show <- renderUI(
+      
+      if(!is.null(r$dataset()) & !is.null(r$geojson()))
+        # UI
+        wellPanel(
+          # input
+          checkboxInput(ns("submit_hide_show"), label = "Afficher / Cacher", value = TRUE, width = NULL))
+      
+    )
+    
     
     
     # -------------------------------------

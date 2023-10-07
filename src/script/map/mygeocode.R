@@ -5,17 +5,22 @@ mygeocode <- function(addresses)
   
   nominatim_osm <- function(address = NULL)
   {
-    ## details: http://wiki.openstreetmap.org/wiki/Nominatim
-    ## fonction nominatim_osm proposée par D.Kisler
+
+    if(suppressWarnings(is.null(address)))
+      return(data.frame())
     
-    if(suppressWarnings(is.null(address)))  return(data.frame())
+    request <- paste0("https://nominatim.openstreetmap.org/search?q=", address, "+france", "&format=jsonv2&limit=1")
+    cat("Request =", request, "\n")
+    
     tryCatch(
-      d <- jsonlite::fromJSON(
-        gsub('\\@addr\\@', gsub('\\s+', '\\%20', address),
-             'http://nominatim.openstreetmap.org/search/@addr@?format=json&addressdetails=0&limit=1')
-      ), error = function(c) return(data.frame())
-    )
-    if(length(d) == 0) return(data.frame())
+      d <- jsonlite::fromJSON(request), 
+      error = function(c) return(data.frame()))
+    
+    if(length(d) == 0)
+      return(data.frame())
+    
+    cat("Output =", d$display_name, "\n")
+    
     return(c(as.numeric(d$lon), as.numeric(d$lat)))
   }
   

@@ -45,29 +45,33 @@ body <- dashboardBody(
               fluidRow(
               
                   column(width = 2,
-                         #select_dataset_UI("data"),
                          
+                         # -- data
                          tabsetPanel(
-                           tabPanel("Présidentielles", select_dataset_UI("presidentielles")),
-                           tabPanel("Législatives", select_dataset_UI("legislatives"))),
+                           tabPanel("Présidentielles", 
+                                    select_dataset_UI("presidentielles")),
+                           tabPanel("Législatives", 
+                                    select_dataset_UI("legislatives"))),
+                         warning_dataset_UI("polygon"),
                          
+                         # -- polygons
                          geojson_UI("polygon"),
-                         paypal_btn()),
+                         warning_geojson_UI("polygon"),
+                         #paypal_btn()
+                         ),
                   
                   column(width = 8,
                          map_UI("map"),br(),
-                         p("© 2022 Philippe PERET / KANGAROO.AI | Version 2.0.1 | ",
+                         p("© 2022 Philippe PERET @TheKangarooFactory | Version 2.0.2 | ",
                            a("LinkedIn", href="https://www.linkedin.com/in/philippeperet/"), "|",
-                           a("Source", href="https://www.data.gouv.fr/fr/pages/donnees-des-elections/"))),
+                           a("GitHub", href="https://github.com/thekangaroofactory"), "|",
+                           a("Data Source", href="https://www.data.gouv.fr/fr/pages/donnees-des-elections/"))),
                   
                   column(width = 2,
                          filters_UI("polygon"),
                          hide_show_UI("polygon"),
                          map_search_Input("map"),
-                         warning_dataset_UI("polygon"),
-                         warning_geojson_UI("polygon"),
                          warning_perfo_UI("polygon"))))
-              
               
       )
 )

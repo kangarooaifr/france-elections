@@ -17,13 +17,13 @@ hide_show_UI <- function(id){
   # namespace
   ns <- NS(id)
   
-  # UI
-  wellPanel(
-    
-    # input
-    checkboxInput(ns("submit_hide_show"), label = "Afficher / Cacher", value = TRUE, width = NULL)
-    
-  )
+  # -- replace next blow
+  uiOutput(ns("hide_show"))
+  
+  # # UI
+  # wellPanel(
+  #   # input
+  #   checkboxInput(ns("submit_hide_show"), label = "Afficher / Cacher", value = TRUE, width = NULL))
   
 }
 
@@ -34,10 +34,12 @@ geojson_UI <- function(id){
   # namespace
   ns <- NS(id)
   
+  uiOutput(ns("geojson"))
+  
   # init buttons (toggle in server)
-  wellPanel(
-    uiOutput(ns("select_geojson")),
-    uiOutput(ns("action_geojson")))
+  #wellPanel(
+  #  uiOutput(ns("select_geojson")),
+  #  uiOutput(ns("action_geojson")))
   
 }
 
