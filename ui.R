@@ -4,14 +4,11 @@
 # --------------------------------------------------------------------------------
 
 # -- Library
-
 library(shiny)
 library(shinydashboard)
 library(shinyWidgets)
 library(leaflet)
 
-# -- init env
-source("environment.R")
 
 # -- source scripts
 cat("Source code from:", path$script, " \n")
@@ -21,10 +18,8 @@ for (nm in list.files(path$script, full.names = TRUE, recursive = TRUE, include.
 }
 rm(nm)
 
-source("config.R")
 
 # -- Define Sidebar UI
-
 sidebar <- dashboardSidebar(
     sidebarMenu(
       menuItem("Résultats", tabName = "resultats", icon = icon("map"), selected = TRUE)),
@@ -32,7 +27,6 @@ sidebar <- dashboardSidebar(
 
 
 # -- Define Body UI
-
 body <- dashboardBody(
   
     tags$head(includeHTML(("./src/google/google-analytics.html"))),

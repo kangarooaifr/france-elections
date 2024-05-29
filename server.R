@@ -12,11 +12,6 @@ library(stringr)
 library(geojsonio)
 
 
-# -- init env
-source("environment.R")
-source("config.R")
-
-
 # -- Source scripts
 cat("Source code from:", path$script, " \n")
 for (nm in list.files(path$script, full.names = TRUE, recursive = TRUE, include.dirs = FALSE))
@@ -35,7 +30,7 @@ shinyServer(
     # DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG
     # *******************************************************************************************************
     
-    DEBUG <<- FALSE
+    DEBUG <<- TRUE
     
     # if(DEBUG){
     #   
