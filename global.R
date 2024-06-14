@@ -19,7 +19,7 @@ path <- list(project = "./",
 # External resources
 # -------------------------------------
 
-source("E:/Portfolio/R/Projects/france-elections/shinyapp/src/script/load_resource.R")
+source("./src/script/load_resource.R")
 
 # -- Columns to aggregate by geocode
 COLS_TO_SUM <- load_resource(path$resource, "cols_to_sum.csv", header = FALSE, format = "vector", encoding = "UTF-8")
