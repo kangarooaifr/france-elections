@@ -58,7 +58,7 @@ body <- dashboardBody(
                   
                   column(width = 8,
                          map_UI("map"),br(),
-                         p("© 2022 Philippe PERET @TheKangarooFactory | Version 2.0.2 | ",
+                         p("© 2024 Philippe PERET | Version 2.0.3 | ",
                            a("LinkedIn", href="https://www.linkedin.com/in/philippeperet/"), "|",
                            a("GitHub", href="https://github.com/thekangaroofactory"), "|",
                            a("Data Source", href="https://www.data.gouv.fr/fr/pages/donnees-des-elections/"))),
