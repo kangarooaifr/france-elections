@@ -41,11 +41,11 @@ europeennes_Server <- function(id, r, path) {
     cat(module, "-- Starting module server... \n")
     
     # -- check for new dataset
-    new_datasets <- check_new_files(pattern = pattern)
+    #new_datasets <- check_new_files(pattern = pattern)
     
-    if(!is.null(new_datasets))
-      prepare_raw_datasets(new_datasets = new_datasets, pattern = pattern, notify = TRUE, session = session)
-    
+    # if(!is.null(new_datasets))
+    #   prepare_raw_datasets(new_datasets = new_datasets, pattern = pattern, notify = TRUE, session = session)
+    # 
     
     # -- get available datasets
     available_datasets <- get_available_datasets(pattern = pattern)
