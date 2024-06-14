@@ -92,12 +92,13 @@ europeennes_Server <- function(id, r, path) {
                                           available_datasets$tour == input$election_turn, ]$file.name
 
       # load
-      dataset <- load_prepared_data(target_file = target_file, colClasses = COL_CLASSES_PREPARED_PRESIDENTIELLE, session = session)
+      dataset <- load_prepared_data(target_file = target_file, colClasses = COL_CLASSES_PREPARED_EUROPEENNES, session = session)
       
       # register filters
       r$filter_by_name(paste(unique(dataset$Nom), unique(dataset$Prénom)))
       r$filter_by_name_label("Candidat(e)s")
-      r$election_type("pdt")
+      r$election_type("eur")
+      r$election_turn(input$election_turn)
 
       # store
       r$dataset(dataset)
