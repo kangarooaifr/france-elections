@@ -63,8 +63,15 @@ prepare_raw_datasets <- function(new_datasets, pattern, notify = FALSE, session 
                         value =  start + 30 / nb_iter,
                         title = paste("Fichier", index, "/", nb_iter, "Préparation des données..."))
     
-    # prepare
-    dataset <- prepare_by_candidates(dataset, pattern)
+    # -- prepare data (transform single lines with multiple candidates into
+    # one line per candidate)
+    if(pattern == "Europeennes")
+      dataset <- prepare_by_candidates2(data = dataset, 
+                                        pattern = "Europeennes", 
+                                        cols_before = COL_CLASSES_BEFORE_CANDIDATES_EUROPEENNES_COMMUNE, 
+                                        cols_candidate = COL_CLASSES_CANDIDATES_EUROPEENNES)
+    else
+      dataset <- prepare_by_candidates(dataset, pattern)
     
     
     # check drom code ???
