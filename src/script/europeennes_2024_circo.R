@@ -1,17 +1,16 @@
 # 
 # 
-# # --
+# # -- param
 # pattern <- "europeennes"
 # 
 # # -- read data
-# dataset <- readr::read_csv("data/resultats-temporaires-par-commune.csv", skip = 1)
+# dataset <- readr::read_delim("data/Europeennes_2024_circonscription.csv", delim = ";", escape_double = FALSE, trim_ws = TRUE)
 # 
-# raw_cols <- colnames(dataset)
 # 
 # cols_before <- c("Code département",
 #                  "Libellé département",
-#                  "Code commune",
-#                  "Libellé commune",
+#                  "Code circonscription législative",
+#                  "Libellé circonscription législative",
 #                  "Inscrits",
 #                  "Votants",
 #                  "% Votants",
@@ -48,6 +47,9 @@
 #                       "% Voix/exprimés",
 #                       "Sièges")
 # 
+# # -- copy
+# data <- dataset
+# 
 # # -- prepare
 # # warning: this line does not work   colnames(data) <- c(names(cols_before), names(cols_candidate))
 # # Replace by this >> colnames(data) <- c(cols_before, cols_candidate)
@@ -57,26 +59,29 @@
 # # -- Code département
 # # Fix code 1,2,3... 9 because it should be 01,02...
 # 
-# data[data$`Code département` == "1", ]$`Code département` <- "01"
-# data[data$`Code département` == "2", ]$`Code département` <- "02"
-# data[data$`Code département` == "3", ]$`Code département` <- "03"
-# data[data$`Code département` == "4", ]$`Code département` <- "04"
-# data[data$`Code département` == "5", ]$`Code département` <- "05"
-# data[data$`Code département` == "6", ]$`Code département` <- "06"
-# data[data$`Code département` == "7", ]$`Code département` <- "07"
-# data[data$`Code département` == "8", ]$`Code département` <- "08"
-# data[data$`Code département` == "9", ]$`Code département` <- "09"
+# # data[data$`Code département` == "1", ]$`Code département` <- "01"
+# # data[data$`Code département` == "2", ]$`Code département` <- "02"
+# # data[data$`Code département` == "3", ]$`Code département` <- "03"
+# # data[data$`Code département` == "4", ]$`Code département` <- "04"
+# # data[data$`Code département` == "5", ]$`Code département` <- "05"
+# # data[data$`Code département` == "6", ]$`Code département` <- "06"
+# # data[data$`Code département` == "7", ]$`Code département` <- "07"
+# # data[data$`Code département` == "8", ]$`Code département` <- "08"
+# # data[data$`Code département` == "9", ]$`Code département` <- "09"
 # 
 # 
-# # -- Code commune
-# # Fix code 1001 because it should be 1 (they added departement before)
+# # --
+# data$`Nom.Tête.de.Liste` <- data$`Libellé abrégé de liste 1`
 # 
-# data$`Code commune` <- substr(data$`Code commune`, nchar(data$`Code commune`) - 3 + 1, nchar(data$`Code commune`))
+# data$`Code circonscription législative` <- substr(data$`Code circonscription législative`, nchar(data$`Code circonscription législative`) - 2 + 1, nchar(data$`Code circonscription législative`))
+# 
+# data$codgeo.circonscription <- paste0(data[[1]], str_pad(data[[3]], 3, pad = "0"))
+# 
 # 
 # colnames(data) <- c("Code.du.département",
 #                     "Libellé.du.département",
-#                     "Code.de.la.commune",
-#                     "Libellé.de.la.commune",
+#                     "Code.de.la.circonscription",
+#                     "Libellé.de.la.circonscription",
 #                     "Inscrits",
 #                     "Votants",
 #                     "Abstentions",
@@ -88,7 +93,11 @@
 #                     "Libellé.Abrégé.Liste",
 #                     "Libellé.Etendu.Liste",
 #                     "Voix",
-#                     "codgeo.commune",
-#                     "codgeo.circonscription",
-#                     "Nom.Tête.de.Liste")
+#                     "Nom.Tête.de.Liste",
+#                     "codgeo.circonscription")
+# 
+# # -- save
+# save_csv(path = "data/prepared", file = "Europeennes_2024_circonscription.txt", data)
+#   
+#  
 # 
