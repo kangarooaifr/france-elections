@@ -45,7 +45,9 @@ body <- dashboardBody(
                            tabPanel("Présidentielles", 
                                     select_dataset_UI("presidentielles")),
                            tabPanel("Législatives", 
-                                    select_dataset_UI("legislatives"))),
+                                    select_dataset_UI("legislatives")),
+                           tabPanel("Européennes", 
+                                    select_dataset_UI("europeennes"))),
                          warning_dataset_UI("polygon"),
                          
                          # -- polygons
