@@ -91,7 +91,7 @@ prepare_by_candidates2 <- function(data, pattern, cols_before, cols_candidate){
   
   # apply helper and bind result
   res <- lapply(1:nb_cand, function(x) helper(x))
-  data <- as.data.frame(rbindlist(res, use.names=FALSE))
+  data <- as.data.frame(data.table::rbindlist(res, use.names=FALSE))
   
   # clean rows with only NA values (because circo have different amount of candidates!)
   if(pattern == "Legislatives")
