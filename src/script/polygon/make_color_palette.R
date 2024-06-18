@@ -15,20 +15,20 @@ make_color_palette <- function(geojson, mode_min = FALSE, mode_max = FALSE){
   
   cat("Building color palette \n")
   
-  # prepare
+  # -- prepare
   range <- geojson@data$Voix / geojson@data$Exprimés * 100
   
-  # set min value to compute color palette
+  # -- set min value to compute color palette
   min <- 0
   if(mode_min)
     min <- min(range, na.rm = TRUE)
   
-  # set max value to compute color palette
+  # -- set max value to compute color palette
   max <- 100
   if(mode_max)
     max <- max(range, na.rm = TRUE)
   
-  # Create a continuous palette function
+  # -- Create a continuous palette function
   cat("-- min = ", min, "max = ", max, "\n")
   colorNumeric(
     palette = "YlOrBr",
