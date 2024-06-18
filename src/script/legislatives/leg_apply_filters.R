@@ -13,19 +13,19 @@
 
 leg_apply_filters <- function(x, filter, module){
   
-  # subset by dep
+  # -- subset by dep
   if(!"tous" %in% filter$dep){
     
     cat(module, "Filter by dep, input =", filter$dep, "\n")
     x <- x[x$Code.du.département %in% filter$dep, ]
     cat(module, "-- output dim =", dim(x), "\n")}
   
-  # subset by nuance
+  # -- subset by nuance
   cat(module, "Filter by nuance, input =", filter$name, "\n")
   x <- x[x$Nuance %in% filter$name, ]
   cat(module, "-- output dim =", dim(x), "\n")
   
-  # return
+  # -- return
   x
   
 }

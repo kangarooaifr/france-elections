@@ -1,15 +1,8 @@
 
 
-# --------------------------------------------------------------------------------
-# Shiny module: Data
-# --------------------------------------------------------------------------------
-
-# -- Library
-
-
-# -------------------------------------
-# Server logic
-# -------------------------------------
+# ------------------------------------------------------------------------------
+# Shiny module Server logic
+# ------------------------------------------------------------------------------
 
 presidentielles_Server <- function(id, r, path) {
   moduleServer(id, function(input, output, session) {
@@ -18,10 +11,10 @@ presidentielles_Server <- function(id, r, path) {
     # Config
     # -------------------------------------
     
-    # get namespace
+    # -- get namespace
     ns <- session$ns
     
-    # config
+    # -- config
     module <- paste0("[", id, "]")
     pattern <- "Presidentielles"
     
@@ -30,7 +23,7 @@ presidentielles_Server <- function(id, r, path) {
     # communication objects
     # -------------------------------------
 
-    # observers: feed this to call for apply filters
+    # -- observers: feed this to call for apply filters
     r$pdt_apply_filters <- reactiveVal(NULL)
     
     
@@ -39,14 +32,7 @@ presidentielles_Server <- function(id, r, path) {
     # -------------------------------------
     
     cat(module, "-- Starting module server... \n")
-    
-    # -- check for new dataset
-    new_datasets <- check_new_files(pattern = pattern)
-    
-    if(!is.null(new_datasets))
-      prepare_raw_datasets(new_datasets = new_datasets, pattern = pattern, notify = TRUE, session = session)
-    
-    
+
     # -- get available datasets
     available_datasets <- get_available_datasets(pattern = pattern)
     
@@ -59,21 +45,21 @@ presidentielles_Server <- function(id, r, path) {
     output$select_dataset <- renderUI(
       wellPanel(
 
-        # year
+        # -- year
         radioButtons(inputId = ns("election_year"),
                      label = "Années",
                      choices = unique(available_datasets$annee),
                      selected = input$election_year,
                      inline = TRUE),
 
-        # turn
+        # -- turn
         radioButtons(inputId = ns("election_turn"),
                      label = "Tour",
                      choices =  unique(available_datasets$tour),
                      selected = input$election_turn,
                      inline = TRUE),
 
-        # load
+        # -- load
         actionButton(ns("load_dataset"), label = "Charger")
 
       ))
@@ -87,19 +73,19 @@ presidentielles_Server <- function(id, r, path) {
 
       cat(module, "load_dataset btn hit \n")
       
-      # get target file based on inputs
+      # -- get target file based on inputs
       target_file <- available_datasets[available_datasets$annee == input$election_year &
                                           available_datasets$tour == input$election_turn, ]$file.name
 
-      # load
+      # -- load
       dataset <- load_prepared_data(target_file = target_file, colClasses = COL_CLASSES_PREPARED_PRESIDENTIELLE, session = session)
       
-      # register filters
+      # -- register filters
       r$filter_by_name(paste(unique(dataset$Nom), unique(dataset$Prénom)))
       r$filter_by_name_label("Candidat(e)s")
       r$election_type("pdt")
 
-      # store
+      # -- store
       r$dataset(dataset)
 
     })
@@ -111,13 +97,13 @@ presidentielles_Server <- function(id, r, path) {
     
     observeEvent(r$pdt_apply_filters(), {
 
-      # log
+      # -- log
       cat(module, "Call to apply filters \n")
 
-      # apply
+      # -- apply
       subset <- pdt_apply_filters(x = r$dataset(), filter = r$pdt_apply_filters(), module = module)
       
-      # check size and store
+      # -- check size and store
       cat(module, "Check output size =", dim(subset), "\n")
       if(dim(subset)[1] == 0)
          showNotification(ui = "Résultat vide, veuillez modifier les filtres.",
@@ -128,7 +114,6 @@ presidentielles_Server <- function(id, r, path) {
 
     })
     
-
   })
 }
 

@@ -12,13 +12,13 @@
 
 check_new_files <- function(pattern){
   
-  # get list of datasets
+  # -- get list of datasets
   raw_files <- list.files(path$data_raw, pattern = pattern, full.names = FALSE, recursive = FALSE, include.dirs = FALSE)
   
-  # get list of prepared datasets
+  # -- get list of prepared datasets
   prepared_files <- list.files(path$data_prepared, pattern = pattern, full.names = FALSE, recursive = FALSE, include.dirs = FALSE)
   
-  # list new datasets
+  # -- list new datasets
   new_files <- raw_files[!raw_files %in% prepared_files]
   
   if(length(new_files) == 0)
@@ -26,7 +26,7 @@ check_new_files <- function(pattern){
   else
     cat("New dataset(s) found :", length(new_files), "\n")
   
-  # return
+  # -- return
   new_files
 
 }

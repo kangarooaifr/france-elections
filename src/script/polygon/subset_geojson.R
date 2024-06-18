@@ -13,38 +13,38 @@
 
 subset_geojson <- function(geo_type, geojson, data){
   
-  # log
+  # -- log
   cat("Subset geojson with matching codgeo \n")
   
-  # check geojson type
+  # -- check geojson type
   if(geo_type == "Circonscriptions législatives 2012"){
 
     cat("-- codgeo.circonscription \n")
     
-    # subset
+    # -- subset
     geojson <- geojson[geojson@data$codgeo %in% data$codgeo.circonscription, ]
     
   } else {
     
     cat("-- codgeo.commune \n")
     
+    # -- Debug
     if(DEBUG){
       DEBUG_GEOJSON_CODGEO <<- geojson@data$codgeo
-      DEBUG_DATA_CODGEO <<- data$codgeo.commune
-    }
+      DEBUG_DATA_CODGEO <<- data$codgeo.commune}
     
-    # subset
+    # -- subset
     geojson <- geojson[geojson@data$codgeo %in% data$codgeo.commune, ]
       
   }
  
-  # debug
+  # -- Debug
   if(DEBUG)
     DEBUG_SUBSET_GEOJSON <<- geojson
   
   cat("-- output dim =", dim(geojson@data), "\n")
   
-  # return
+  # -- return
   geojson
   
 }

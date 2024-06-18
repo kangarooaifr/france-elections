@@ -1,55 +1,29 @@
 
 
-# --------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Shiny: server logic of the Shiny web application
-# --------------------------------------------------------------------------------
- 
-# -- Library
-library(shiny)
-library(shinyWidgets)
-library(dplyr)
-library(stringr)
-library(geojsonio)
-
-
-# -- Source scripts
-cat("Source code from:", path$script, " \n")
-for (nm in list.files(path$script, full.names = TRUE, recursive = TRUE, include.dirs = FALSE))
-{
-  source(nm, encoding = 'UTF-8')
-}
-rm(nm)
-
+# ------------------------------------------------------------------------------
 
 # -- Define server logic
 
 shinyServer(
   function(input, output, session){
     
-    # *******************************************************************************************************
-    # DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG
-    # *******************************************************************************************************
+    # --------------------------------------------------------------------------
+    # Local run & debug
+    # --------------------------------------------------------------------------
     
-    DEBUG <<- TRUE
+    # -- detect local run
+    is_local <- Sys.getenv('SHINY_PORT') == ""
+    cat(">> local run =", is_local, "\n")
     
-    # if(DEBUG){
-    #   
-    #   source(file.path(path$script, "map/map_server.R"))
-    #   source(file.path(path$script, "polygon/polygon_server.R"), encoding = 'UTF-8')
-    #   
-    # }
-    
-    # *******************************************************************************************************
-    # DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG
-    # *******************************************************************************************************
-    
-    # analytics
-    log_event(session_id = session$token, event = "main_server_start", timestamp = getTimestamp())
+    # -- set DEBUG
+    DEBUG <<- is_local
     
     
-    # -------------------------------------
+    # --------------------------------------------------------------------------
     # Communication objects
-    # -------------------------------------
+    # --------------------------------------------------------------------------
     
     # -- declare r communication object
     r <- reactiveValues()
@@ -58,9 +32,9 @@ shinyServer(
     r$dataset <- reactiveVal(NULL)
     
     
-    # ----------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Launch module servers
-    # ----------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     
     # -- the map
     map_Server(id = "map", r = r, path = path)

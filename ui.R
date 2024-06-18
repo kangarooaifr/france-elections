@@ -1,23 +1,7 @@
 
-# --------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # This is the user-interface definition of the Shiny web application
-# --------------------------------------------------------------------------------
-
-# -- Library
-library(shiny)
-library(shinydashboard)
-library(shinyWidgets)
-library(leaflet)
-
-
-# -- source scripts
-cat("Source code from:", path$script, " \n")
-for (nm in list.files(path$script, full.names = TRUE, recursive = TRUE, include.dirs = FALSE))
-{
-  source(nm, encoding = 'UTF-8')
-}
-rm(nm)
-
+# ------------------------------------------------------------------------------
 
 # -- Define Sidebar UI
 sidebar <- dashboardSidebar(
@@ -52,13 +36,11 @@ body <- dashboardBody(
                          
                          # -- polygons
                          geojson_UI("polygon"),
-                         warning_geojson_UI("polygon"),
-                         #paypal_btn()
-                         ),
+                         warning_geojson_UI("polygon")),
                   
                   column(width = 8,
                          map_UI("map"),br(),
-                         p("© 2024 Philippe PERET | Version 2.0.3 | ",
+                         p("© 2024 Philippe PERET | Version 2.1.1 | ",
                            a("LinkedIn", href="https://www.linkedin.com/in/philippeperet/"), "|",
                            a("GitHub", href="https://github.com/thekangaroofactory"), "|",
                            a("Data Source", href="https://www.data.gouv.fr/fr/pages/donnees-des-elections/"))),

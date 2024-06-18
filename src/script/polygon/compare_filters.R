@@ -12,17 +12,17 @@
 
 compare_filters <- function(new, old){
   
-  # init
+  # -- init
   is_same <- TRUE
   
-  # get difference between lists
+  # -- get difference between lists
   diff <- setdiff(new, old)
   
-  # check
+  # -- check
   if(length(diff) != 0)
     is_same <- FALSE
   
-  # return
+  # -- return
   is_same
   
 }

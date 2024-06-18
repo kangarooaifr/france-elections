@@ -1,10 +1,21 @@
 
 
 # -------------------------------------
+# Dependencies
+# -------------------------------------
+
+# -- Library
+library(shiny)
+library(shinydashboard)
+library(shinyWidgets)
+library(leaflet)
+
+
+# -------------------------------------
 # Environment
 # -------------------------------------
 
-# -- Path
+# -- Define path
 path <- list(project = "./",
              script = "./src/script",
              dictionary = "./src/dictionary",
@@ -16,10 +27,20 @@ path <- list(project = "./",
 
 
 # -------------------------------------
-# External resources
+# Source scripts
 # -------------------------------------
 
-source("./src/script/load_resource.R")
+cat("Source code from:", path$script, " \n")
+for (nm in list.files(path$script, full.names = TRUE, recursive = TRUE, include.dirs = FALSE))
+{
+  source(nm, encoding = 'UTF-8')
+}
+rm(nm)
+
+
+# -------------------------------------
+# External resources
+# -------------------------------------
 
 # -- Columns to aggregate by geocode
 COLS_TO_SUM <- load_resource(path$resource, "cols_to_sum.csv", header = FALSE, format = "vector", encoding = "UTF-8")
