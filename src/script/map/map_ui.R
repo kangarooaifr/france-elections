@@ -3,9 +3,6 @@
 # Shiny module: map
 # ------------------------------------------------------------------------------
 
-# -- Library
-
-
 # -------------------------------------
 # UI items section
 # -------------------------------------
@@ -18,7 +15,7 @@ map_UI <- function(id)
   ns <- NS(id)
   
   # map
-  leafletOutput(ns("map"), height = 800)
+  leaflet::leafletOutput(ns("map"), height = 800)
   
 }
 

@@ -3,13 +3,6 @@
 # This is the user-interface definition of the Shiny web application
 # --------------------------------------------------------------------------------
 
-# -- Library
-library(shiny)
-library(shinydashboard)
-library(shinyWidgets)
-library(leaflet)
-
-
 # -- Define Sidebar UI
 sidebar <- dashboardSidebar(
     sidebarMenu(

@@ -1,7 +1,4 @@
 
-library(dplyr)
-
-
 
 aggregate_by_codgeo <- function(geo_type, data, election_type){
   

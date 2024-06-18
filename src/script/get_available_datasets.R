@@ -17,7 +17,7 @@ get_available_datasets <- function(pattern){
   
   # build data frame (remove ext, split file name into cols)
   data_list <- data.frame(file.name = data_list)
-  data_list[c('election', 'annee', 'tour')] <- str_split_fixed(sub('\\.txt$', '', data_list$file.name), '_', 3)
+  data_list[c('election', 'annee', 'tour')] <- stringr::str_split_fixed(sub('\\.txt$', '', data_list$file.name), '_', 3)
   
   # return
   data_list

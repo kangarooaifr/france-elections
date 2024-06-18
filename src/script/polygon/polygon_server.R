@@ -4,10 +4,6 @@
 # Shiny module: flights
 # --------------------------------------------------------------------------------
 
-# -- Library
-library(geojsonio)
-
-
 # -------------------------------------
 # Server logic
 # -------------------------------------
@@ -212,7 +208,7 @@ polygon_Server <- function(id, r, path) {
       
       # load
       withProgress(message = 'Chargement...', value = 0.25, {
-        geojson <- geojson_read(file.path(path$resource, input$select_geojson), what = "sp")})
+        geojson <- geojsonio::geojson_read(file.path(path$resource, input$select_geojson), what = "sp")})
       
       # monitoring
       end <- getTimestamp()

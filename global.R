@@ -1,10 +1,21 @@
 
 
 # -------------------------------------
+# Dependencies
+# -------------------------------------
+
+# -- Library
+library(shiny)
+library(shinydashboard)
+library(shinyWidgets)
+library(leaflet)
+
+
+# -------------------------------------
 # Environment
 # -------------------------------------
 
-# -- Path
+# -- Define path
 path <- list(project = "./",
              script = "./src/script",
              dictionary = "./src/dictionary",

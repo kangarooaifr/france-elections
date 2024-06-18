@@ -3,14 +3,6 @@
 # --------------------------------------------------------------------------------
 # Shiny: server logic of the Shiny web application
 # --------------------------------------------------------------------------------
- 
-# -- Library
-library(shiny)
-library(shinyWidgets)
-library(dplyr)
-library(stringr)
-library(geojsonio)
-
 
 # -- Define server logic
 
