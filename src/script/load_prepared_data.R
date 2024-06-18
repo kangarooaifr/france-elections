@@ -26,7 +26,7 @@ load_prepared_data <- function(target_file, colClasses, session){
                    type = c("default"),
                    session = session)
   
-  # debug
+  # -- Debug
   if(DEBUG)
     DEBUG_PREPARED_DATASET <<- dataset
   

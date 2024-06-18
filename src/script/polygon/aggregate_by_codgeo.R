@@ -51,7 +51,7 @@ aggregate_by_codgeo <- function(geo_type, data, election_type){
     
   }
   
-  # debug
+  # -- Debug
   if(DEBUG)
     DEBUT_AGGREGATE_CODGEO <<- output
   

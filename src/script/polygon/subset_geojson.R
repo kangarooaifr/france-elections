@@ -28,17 +28,17 @@ subset_geojson <- function(geo_type, geojson, data){
     
     cat("-- codgeo.commune \n")
     
+    # -- Debug
     if(DEBUG){
       DEBUG_GEOJSON_CODGEO <<- geojson@data$codgeo
-      DEBUG_DATA_CODGEO <<- data$codgeo.commune
-    }
+      DEBUG_DATA_CODGEO <<- data$codgeo.commune}
     
     # subset
     geojson <- geojson[geojson@data$codgeo %in% data$codgeo.commune, ]
       
   }
  
-  # debug
+  # -- Debug
   if(DEBUG)
     DEBUG_SUBSET_GEOJSON <<- geojson
   

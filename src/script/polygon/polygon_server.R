@@ -234,7 +234,7 @@ polygon_Server <- function(id, r, path) {
       }
       # *******************
       
-      
+      # -- Debug
       if(DEBUG)
         DEBUG_RAW_GEOJSON <<- geojson
       

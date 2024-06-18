@@ -37,7 +37,7 @@ build_labels <- function(geojson){
     paste("Exprimés :", geojson@data$Exprimés)
   ) %>% lapply(htmltools::HTML)
   
-  # debug
+  # -- Debug
   if(DEBUG)
     DEBUG_LABELS <<- labels
   

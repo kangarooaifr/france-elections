@@ -22,6 +22,7 @@ add_data_to_geojson <- function(geojson, data){
   geojson@data[cols] <- data[match(geojson@data$codgeo, data$codgeo), cols]
   cat("-- output dim =", dim(geojson@data), "\n")
   
+  # -- Debug
   if(DEBUG)
     DEBUG_GEOJSON_WITH_DATA <<- geojson
   

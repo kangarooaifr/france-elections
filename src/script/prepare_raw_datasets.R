@@ -53,6 +53,7 @@ prepare_raw_datasets <- function(new_datasets, pattern, notify = FALSE, session 
     # -- load file
     dataset <- load_with_ukn_cols(file.path(path$data_raw, file))
     
+    # -- Debug
     if(DEBUG)
       DEBUG_RAW_DATASET <<- dataset
     

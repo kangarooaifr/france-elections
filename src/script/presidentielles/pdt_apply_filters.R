@@ -30,6 +30,7 @@ pdt_apply_filters <- function(x, filter, module){
   x$tmp_name <- NULL
   cat(module, "-- output dim =", dim(x), "\n")
   
+  # -- Debug
   if(DEBUG)
     DEBUG_PDT_APPLY_FILTER <<- x
   

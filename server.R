@@ -13,7 +13,13 @@ shinyServer(
     # DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG
     # *******************************************************************************************************
     
-    DEBUG <<- FALSE
+    # -- detect local run
+    is_local <- Sys.getenv('SHINY_PORT') == ""
+    cat(">> local run =", is_local, "\n")
+    
+    # -- set DEBUG
+    DEBUG <<- is_local
+
     
     # *******************************************************************************************************
     # DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG
