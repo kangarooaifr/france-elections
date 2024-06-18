@@ -36,13 +36,11 @@ body <- dashboardBody(
                          
                          # -- polygons
                          geojson_UI("polygon"),
-                         warning_geojson_UI("polygon"),
-                         #paypal_btn()
-                         ),
+                         warning_geojson_UI("polygon")),
                   
                   column(width = 8,
                          map_UI("map"),br(),
-                         p("© 2024 Philippe PERET | Version 2.0.3 | ",
+                         p("© 2024 Philippe PERET | Version 2.1.1 | ",
                            a("LinkedIn", href="https://www.linkedin.com/in/philippeperet/"), "|",
                            a("GitHub", href="https://github.com/thekangaroofactory"), "|",
                            a("Data Source", href="https://www.data.gouv.fr/fr/pages/donnees-des-elections/"))),
