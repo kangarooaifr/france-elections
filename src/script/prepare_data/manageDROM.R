@@ -2,9 +2,7 @@
 
 check_drom_code <- function(data){
   
-  
   cat("Checking DROM code \n")
-  
   
   # ---------------------------------------------------------
   # DROM : Departement et Region d'Outre-Mer
