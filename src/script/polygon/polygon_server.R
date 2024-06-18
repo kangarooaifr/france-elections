@@ -57,8 +57,7 @@ polygon_Server <- function(id, r, path) {
     # Init
     # -------------------------------------
     
-    cat("-- [polygons] Starting module server... \n")
-
+    cat(module, "-- Starting module server... \n")
 
     # -- list available GeoJsons
     list_geojson <- list("Communes" = "a-com2022.json",

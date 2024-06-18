@@ -47,8 +47,5 @@ shinyServer(
     legislatives_Server(id = "legislatives", r = r, path = path)
     europeennes_Server(id = "europeennes", r = r, path = path)
     
-    # -- analytics
-    analytics_Server(id = "analytics", r = r, path = path)
-    
   }
 )
