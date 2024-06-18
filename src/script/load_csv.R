@@ -17,14 +17,14 @@ load_with_ukn_cols <- function(target_file, nb_cols = 500){
   cat("File : ", target_file, "\n")
   cat("nb_cols = ", nb_cols, "\n")
   
-  # read file with nb_cols cols
+  # -- read file with nb_cols cols
   dat <- read.csv(target_file, col.names = paste("V",1:nb_cols), skip = 1, header = F, fill = T, sep = ",", dec = ",")
   
-  # drop empty cols
+  # -- drop empty cols
   dat <- dat[colSums(!is.na(dat)) > 0]
   cat("Ouput dim = ", dim(dat), "\n")
   
-  # return
+  # -- return
   dat
   
 }
