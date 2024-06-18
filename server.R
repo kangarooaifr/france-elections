@@ -12,15 +12,6 @@ library(stringr)
 library(geojsonio)
 
 
-# -- Source scripts
-cat("Source code from:", path$script, " \n")
-for (nm in list.files(path$script, full.names = TRUE, recursive = TRUE, include.dirs = FALSE))
-{
-  source(nm, encoding = 'UTF-8')
-}
-rm(nm)
-
-
 # -- Define server logic
 
 shinyServer(
@@ -30,14 +21,7 @@ shinyServer(
     # DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG
     # *******************************************************************************************************
     
-    DEBUG <<- TRUE
-    
-    # if(DEBUG){
-    #   
-    #   source(file.path(path$script, "map/map_server.R"))
-    #   source(file.path(path$script, "polygon/polygon_server.R"), encoding = 'UTF-8')
-    #   
-    # }
+    DEBUG <<- FALSE
     
     # *******************************************************************************************************
     # DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG
