@@ -15,6 +15,8 @@ aggregate_by_codgeo <- function(geo_type, data, election_type){
     # check election_type
     if(election_type == "leg")
       cols_unique <- COLS_UNIQUE_CIRCO_LEG
+    else if(election_type == "eur")
+      cols_unique <- COLS_UNIQUE_CIRCO_EUR
     else
       cols_unique <- COLS_UNIQUE_CIRCO_PDT
     
@@ -35,6 +37,8 @@ aggregate_by_codgeo <- function(geo_type, data, election_type){
     # check election_type
     if(election_type == "leg")
       cols_unique <- COLS_UNIQUE_COMMUNE_LEG
+    else if(election_type == "eur")
+      cols_unique <- COLS_UNIQUE_COMMUNE_EUR
     else
       cols_unique <- COLS_UNIQUE_COMMUNE_PDT
     

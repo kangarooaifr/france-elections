@@ -4,14 +4,11 @@
 # --------------------------------------------------------------------------------
 
 # -- Library
-
 library(shiny)
 library(shinydashboard)
 library(shinyWidgets)
 library(leaflet)
 
-# -- init env
-source("environment.R")
 
 # -- source scripts
 cat("Source code from:", path$script, " \n")
@@ -21,10 +18,8 @@ for (nm in list.files(path$script, full.names = TRUE, recursive = TRUE, include.
 }
 rm(nm)
 
-source("config.R")
 
 # -- Define Sidebar UI
-
 sidebar <- dashboardSidebar(
     sidebarMenu(
       menuItem("Résultats", tabName = "resultats", icon = icon("map"), selected = TRUE)),
@@ -32,7 +27,6 @@ sidebar <- dashboardSidebar(
 
 
 # -- Define Body UI
-
 body <- dashboardBody(
   
     tags$head(includeHTML(("./src/google/google-analytics.html"))),
@@ -51,7 +45,9 @@ body <- dashboardBody(
                            tabPanel("Présidentielles", 
                                     select_dataset_UI("presidentielles")),
                            tabPanel("Législatives", 
-                                    select_dataset_UI("legislatives"))),
+                                    select_dataset_UI("legislatives")),
+                           tabPanel("Européennes", 
+                                    select_dataset_UI("europeennes"))),
                          warning_dataset_UI("polygon"),
                          
                          # -- polygons
@@ -62,7 +58,7 @@ body <- dashboardBody(
                   
                   column(width = 8,
                          map_UI("map"),br(),
-                         p("© 2022 Philippe PERET @TheKangarooFactory | Version 2.0.2 | ",
+                         p("© 2024 Philippe PERET | Version 2.0.3 | ",
                            a("LinkedIn", href="https://www.linkedin.com/in/philippeperet/"), "|",
                            a("GitHub", href="https://github.com/thekangaroofactory"), "|",
                            a("Data Source", href="https://www.data.gouv.fr/fr/pages/donnees-des-elections/"))),

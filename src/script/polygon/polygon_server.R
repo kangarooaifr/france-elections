@@ -42,6 +42,9 @@ polygon_Server <- function(id, r, path) {
     r$filter_by_name_label <- reactiveVal(NULL)
     r$election_type <- reactiveVal(NULL)
     
+    # -- hack to manage european election (since 1 turn but different files)
+    r$election_turn <- reactiveVal(NULL)
+    
     # to store whether commune / circo are loaded
     geojson_type <- reactiveVal(NULL)
     
@@ -102,8 +105,19 @@ polygon_Server <- function(id, r, path) {
       # -- check if dataset loaded
       if(!is.null(r$dataset())){
         
+        if(r$election_type() == "eur"){
+          
+          if(r$election_turn() == "circonscription")
+            choices <- list("Circonscriptions législatives 2012" = "france-circonscriptions-legislatives-2012.json")
+          
+          else
+            choices  <- list("Communes" = "a-com2022.json")
+          
+        } else
+          choices <- list_geojson
+        
         wellPanel(
-          selectizeInput(ns("select_geojson"), label = "Contours", choices = list_geojson),
+          selectizeInput(ns("select_geojson"), label = "Contours", choices = choices),
           actionButton(ns("load_geojson"), label = "Charger"))
         
       } else
@@ -310,6 +324,10 @@ polygon_Server <- function(id, r, path) {
           
           r$leg_apply_filters(filter_values)
         
+        else if(r$election_type() == "eur")
+          
+          r$eur_apply_filters(filter_values)
+        
         else {
           
           r$pdt_apply_filters(filter_values)}}
@@ -398,7 +416,7 @@ polygon_Server <- function(id, r, path) {
       input$select_opacity}, {
         
         # required!
-        req(geojson_to_display())
+        req(geojson_to_display(), cache_color_palette(), input$select_opacity)
         
         cat(module, "Updating polygons on map \n")
         

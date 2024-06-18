@@ -1,20 +1,15 @@
 
 
+# --------------------------------------------------------------------------------
 # Shiny: server logic of the Shiny web application
-
+# --------------------------------------------------------------------------------
+ 
 # -- Library
-
 library(shiny)
 library(shinyWidgets)
-
 library(dplyr)
 library(stringr)
 library(geojsonio)
-
-
-# -- init env
-source("environment.R")
-source("config.R")
 
 
 # -- Source scripts
@@ -26,7 +21,7 @@ for (nm in list.files(path$script, full.names = TRUE, recursive = TRUE, include.
 rm(nm)
 
 
-# Define server logic
+# -- Define server logic
 
 shinyServer(
   function(input, output, session){
@@ -35,7 +30,7 @@ shinyServer(
     # DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG
     # *******************************************************************************************************
     
-    DEBUG <<- FALSE
+    DEBUG <<- TRUE
     
     # if(DEBUG){
     #   
@@ -56,37 +51,29 @@ shinyServer(
     # Communication objects
     # -------------------------------------
     
-    # declare r communication object
+    # -- declare r communication object
     r <- reactiveValues()
     
-    # loaded dataset (exposed to check if filters can be displayed)
+    # -- loaded dataset (exposed to check if filters can be displayed)
     r$dataset <- reactiveVal(NULL)
     
     
     # ----------------------------------------------------------------------
-    # - dataset: from data module, contains the data by candidate / polygon
-    
-    # - filter_by_name
-    
-    # - proxymap:
-    # - map_center:
+    # Launch module servers
     # ----------------------------------------------------------------------
     
-    
-    # data
-    #data_Server(id = "data", r = r, path = path)
-    
-    # map
+    # -- the map
     map_Server(id = "map", r = r, path = path)
     
-    # polygon city-level
+    # -- polygon
     polygon_Server(id = "polygon", r = r, path = path)
     
-    # election servers
+    # -- election servers
     presidentielles_Server(id = "presidentielles", r = r, path = path)
     legislatives_Server(id = "legislatives", r = r, path = path)
+    europeennes_Server(id = "europeennes", r = r, path = path)
     
-    # analytics
+    # -- analytics
     analytics_Server(id = "analytics", r = r, path = path)
     
   }
