@@ -1,16 +1,26 @@
 
-# ------------------------------------------------------------------------------
-# Shiny module: map
-# ------------------------------------------------------------------------------
 
-# -------------------------------------
-# Server logic
-# -------------------------------------
+# ------------------------------------------------------------------------------
+# Shiny module server logic
+# ------------------------------------------------------------------------------
 
 map_Server <- function(id, r, path) {
   moduleServer(id, function(input, output, session) {
     
-    cat("-- [map] Starting module server... \n")
+    # -------------------------------------
+    # Config
+    # -------------------------------------
+
+    # -- parameters
+    module <- paste0("[", id, "]")
+    
+    
+    # -------------------------------------
+    # Init
+    # -------------------------------------
+    
+    cat(module, "-- Starting module server... \n")
+    
     
     # -------------------------------------
     # Outputs
@@ -18,6 +28,7 @@ map_Server <- function(id, r, path) {
     
     # -- Output: map
     output$map <- renderLeaflet({
+      
       leaflet() %>%
         
         # Add default OpenStreetMap map tiles
@@ -38,7 +49,6 @@ map_Server <- function(id, r, path) {
     # -------------------------------------
     # Event observers
     # -------------------------------------
-    
     
     # -- Observe map center
     observeEvent(input$map_center, {
